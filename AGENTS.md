@@ -10,3 +10,5 @@ Keep upstream license and attribution. For updates compare the old upstream snap
 
 Run `python scripts/validate.py`, `python -m unittest discover -s tests`, and applicable plugin script tests. Structural checks are not host execution proof. Report Cloud, Windows, and desktop host verification separately. Do not weaken validators or change `adapter/rules.md` merely to make a port pass.
 
+For Cloud network commands, read `cloud/networking.md` and inspect the current tool schema. Use the host's supported network-enabled execution mode while preserving the managed proxy and TLS settings. A sandbox permission failure is not proof that the proxy is down; a proxy CONNECT 403 is a separate destination-policy failure.
+
