@@ -36,11 +36,13 @@ def build(output: Path):
         if any(set(Path(name).parts) & {'node_modules', '.git', '.venv', '__pycache__'} for name in names):
             raise ValueError('Generated files leaked into archive')
     return {'archive': str(output), 'files': len(files), 'skills': skill_count,
+            'version': json.loads((plugin / 'plugin.json').read_text(encoding='utf-8'))['version'],
             'sha256': hashlib.sha256(output.read_bytes()).hexdigest()}
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', type=Path, default=ROOT / 'dist/pstack-codex-0.1.0.zip')
+    manifest = json.loads((ROOT / 'plugins/pstack-codex/plugin.json').read_text(encoding='utf-8'))
+    parser.add_argument('--output', type=Path, default=ROOT / 'dist' / f"pstack-codex-{manifest['version']}.zip")
     args = parser.parse_args()
     print(json.dumps(build(args.output), indent=2))

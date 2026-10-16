@@ -1,7 +1,7 @@
 {
-  "name": "pstack-codex-private",
+  "name": "pstack-codex",
   "interface": {
-    "displayName": "pstack for Codex (private)"
+    "displayName": "pstack for Codex"
   },
   "plugins": [
     {

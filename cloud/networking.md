@@ -10,7 +10,7 @@ Apply the supported network mode to Git fetch/push, GitHub API requests, depende
 
 ## Destination policy
 
-The private pstack-codex environment uses the package-manager allowlist preset plus the exact custom hostname `api.github.com`. The preset already includes `github.com`. Private repository authentication remains managed by the host. No extra network secret is required for public upstream API reads.
+The updater needs GitHub repository access and the exact API hostname `api.github.com`. A package-manager preset may allow `github.com` without allowing `api.github.com`; inspect the current preset instead of assuming both are included. Add missing destinations through environment settings. Repository authentication remains managed by the host. Public upstream API reads do not require a personal secret.
 
 Change destinations only through the supported environment configuration flow. Save, test, and republish the environment. Existing chats can retain older environment state; inspect their active policy and test their actual requests rather than assuming publication updated them.
 

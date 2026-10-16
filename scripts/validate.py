@@ -53,6 +53,23 @@ def validate(root: Path = ROOT, metadata_only: bool = False) -> list[str]:
     interface = manifest.get('extensions', {}).get('com.openai', {}).get('interface', {})
     if len(interface.get('shortDescription', '')) > 30:
         errors.append('plugin shortDescription exceeds 30 characters')
+    try:
+        marketplace = json.loads((root / '.agents/plugins/marketplace.json').read_text(encoding='utf-8'))
+        entries = marketplace.get('plugins', [])
+        if marketplace.get('name') != 'pstack-codex' or len(entries) != 1:
+            errors.append('public marketplace identity or inventory mismatch')
+        else:
+            entry = entries[0]
+            source = entry.get('source', {})
+            source_path = source.get('path')
+            if (entry.get('name') != manifest['name'] or source.get('source') != 'local'
+                    or not isinstance(source_path, str) or Path(source_path).is_absolute()
+                    or (root / source_path).resolve() != plugin.resolve()):
+                errors.append('marketplace must resolve to the maintained plugin directory')
+            if entry.get('policy', {}).get('installation') != 'AVAILABLE':
+                errors.append('marketplace must make the plugin available for installation')
+    except (OSError, ValueError, TypeError, AttributeError, KeyError) as exc:
+        errors.append(f'invalid marketplace: {exc}')
     expected = {p.parent.name for p in (root / 'upstream/pstack/skills').glob('*/SKILL.md')}
     actual = {p.parent.name for p in (plugin / 'skills').glob('*/SKILL.md')}
     if expected != actual or actual != set(statuses):

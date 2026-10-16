@@ -1,43 +1,28 @@
-# Native scheduling before an external dispatcher
+# Maintainer automation
 
-Research checked on 2026-10-15 (America/Los_Angeles). Native scheduled command execution has now been verified once. Recurring update automation is not yet enabled; see [the verification record](verification.md).
+Installing the plugin does not install an updater or create a Cloud environment. This repository contains preparation tools and a [maintenance prompt](../cloud/update-task.md); recurring execution is disabled until a maintainer explicitly enables and verifies it.
 
-The desired workflow is: read the `pstack` subtree SHA in `cursor/plugins`, compare it with the accepted source tree, adapt a changed pinned snapshot in a cloud coding environment, run checks, and return a draft pull request. A persistent external machine is not inherently required.
+## Accepted state and candidates
 
-## Separate the three responsibilities
+`upstream.lock.json` records the accepted upstream commit, pstack subtree, and source version. `scripts/probe_upstream.py` compares a newly pinned upstream subtree without changing that lock. `scripts/prepare_update.py` places a changed snapshot and binary diff beneath ignored `work/candidates/` and leaves accepted state untouched.
 
-| Responsibility | Native candidate | External fallback |
-| --- | --- | --- |
-| Wake up | ChatGPT web scheduled task or supported GitHub event | Cloudflare Cron Trigger |
-| Decide whether work exists | Read the pinned subtree SHA and accepted lock using connected tools | Worker calls GitHub APIs and compares the subtree SHA |
-| Execute the adaptation | A scheduled continuation of the Cloud chat (one-off command execution verified) | A supported Cloud submission interface; a short-lived CLI bridge only if necessary |
+Adaptation compares the accepted source, candidate source, and maintained plugin. It preserves workflow coverage, validates the package, and opens a draft PR. The accepted lock changes only in the reviewed adaptation. Repeated detection of the same tree must reuse or report the existing candidate instead of creating duplicate work.
 
-Neither a timer nor a tree comparison needs a model. If a native scheduled chat invokes a model on every tick, it cannot meet the stricter optimization of zero model invocations while the upstream tree is unchanged. This is a tradeoff to measure, not a reason to claim native scheduling is unavailable.
+## Cloud setup
 
-## What official documentation establishes
+1. Create an environment scoped to this repository using the host's supported setup flow.
+2. Use [cloud/install.sh](../cloud/install.sh) for the development runtimes and [start-skill.md](../cloud/start-skill.md) for startup guidance.
+3. Configure network destinations through environment settings. See [networking.md](../cloud/networking.md); Git and GitHub API access are separate checks.
+4. Validate commands in a fresh ordinary Cloud task after publishing the configuration.
+5. Run the bounded [proof procedure](../cloud/proof-request.md) only when its one-off callback is explicitly authorized.
+6. Before recurring maintenance, rehearse a changed candidate through draft-PR creation and duplicate-run handling. Then explicitly authorize the recurring schedule.
 
-[Scheduled tasks](https://learn.chatgpt.com/docs/automations) supports web schedules and returning to an existing chat. Supported GitHub events concern pull request activity, including commit updates and merges; the list does not establish an arbitrary third-party repository path/tree-change trigger. Availability depends on the account and workspace. Desktop project tasks depend on a running computer.
+Keep environment IDs, chat IDs, schedule IDs, and raw receipts in local ignored working files or another private operational store. Public verification should describe commands, outcomes, and limitations without those personal identifiers.
 
-[Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments) supplies repository workspaces and runs while the local computer is asleep. The scheduling documentation does not explicitly establish that a scheduled chat continuation preserves this particular execution environment. The actual one-off test described in verification.md confirmed scheduled command execution in the matching repository workspace; fresh VM identity was not exposed.
+## Execution and scheduling
 
-[GitHub integration](https://learn.chatgpt.com/docs/third-party/github) can start a Legacy Cloud chat from a non-review `@codex` PR comment. It is not the same integration as the new Cloud environment flow. A human comment working does not prove that a bot-generated comment is accepted.
+A native scheduled continuation executed repository commands during development. Availability and its execution destination still need verification in each account and host. An initial run does not prove that a scheduled run executed, and a timer firing does not prove that an update succeeded.
 
-[CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli#cli-codex-cloud) documents `codex cloud exec` and `codex cloud list`. The installed CLI is 0.160.0. An empty task list does not prove that no cloud environments exist, and CLI compatibility with a newly published environment remains an execution test.
+Native schedules can invoke a model even when there is no source change. If avoiding those invocations is a requirement, evaluate a separate read-only detector and a supported Cloud dispatch mechanism. An external timer alone does not establish access to the coding environment. No external dispatcher is configured by this repository.
 
-## Cloudflare's role if native scheduling is insufficient
-
-[Workers Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/) can invoke a scheduled handler that calls GitHub. No continuously running VPS is needed. A Workflow can persist coordination and retries if the process needs multiple steps.
-
-The Workers runtime is not a general Linux process host. Its Node child-process support must not be treated as permission to execute the native Codex CLI. A CLI-only submission path would require a process host such as a short-lived container or CI runner. That bridge submits and observes a Cloud task; it does not need to perform the adaptation itself.
-
-[Cloudflare's Codex sandbox guide](https://developers.cloudflare.com/sandbox/coding-agents/codex/) instead runs `codex exec` inside Cloudflare using an API/gateway setup. This changes the execution product and authentication/billing path. It is an alternative, not evidence that a plain Worker can start a task in the user's ChatGPT Codex Cloud environment.
-
-## Acceptance test before choosing infrastructure
-
-1. Publish a private environment containing only `Cusnd/pstack-codex`.
-2. Start a bounded task which records its repository, branch, HEAD, Python and Git versions, reads the lock, and runs metadata validation. Do not install this unfinished plugin into the user's account.
-3. Establish whether the same Cloud chat can schedule a continuation. Inspect the resulting schedule, environment identity, and actual run evidence. A reminder or connector-only summary is insufficient.
-4. Test no-change and changed-tree cases. Keep accepted source state separate from detected or in-flight state; advance the accepted lock only with the reviewed adaptation.
-5. If the native route fails, record the exact unsupported operation. Only then select a Cloudflare dispatcher and the smallest supported submission bridge.
-
-One native one-off schedule completed successfully. The subsequent network repair separated command sandbox permissions from destination policy, added only api.github.com, and republished the private environment. The old diagnostic chat retains its prior environment version; subsequent work must start from the repaired publication. See [verification](verification.md) for the actual live and scheduled evidence. No Cloudflare resource, recurring schedule, release, automatic merge, or personal plugin installation is active. Review of the accepted baseline and a complete changed-candidate-to-draft-PR rehearsal remain required before enabling recurring updates.
+Official references: [Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments), [scheduled tasks](https://learn.chatgpt.com/docs/automations), and [developer commands](https://learn.chatgpt.com/docs/developer-commands). Use the actual current tools and schemas; do not infer an environment ID from a chat ID or invent a dispatch endpoint.

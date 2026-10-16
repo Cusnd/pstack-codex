@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pstack-codex",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Codex adaptation of pstack workflows, principles, and verification tools.",
   "author": {
     "name": "Lauren Tan"
@@ -23,7 +23,7 @@
       "interface": {
         "displayName": "pstack for Codex",
         "shortDescription": "Deliberate, verified workflows",
-        "longDescription": "A maintained Codex adaptation of Lauren Tan's pstack. Capability status and verification are tracked in the source repository.",
+        "longDescription": "An alpha Codex adaptation of Lauren Tan's pstack: 54 skills for deliberate, verified workflows. 53 are adapted; make-bot-ui remains planning-only. Host capabilities and live workflow coverage vary; see the repository for installation and limitations.",
         "developerName": "Cusnd; upstream by Lauren Tan",
         "category": "Developer Tools",
         "capabilities": [],
