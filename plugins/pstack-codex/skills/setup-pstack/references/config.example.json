@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "budget": "inherit",
+  "roles": {
+    "feature, refactoring": { "model": "inherit-parent" },
+    "bug-fix": { "model": "inherit-parent" },
+    "perf-issue": { "model": "inherit-parent" },
+    "hillclimb": { "model": "inherit-parent" },
+    "judgment and prose": { "model": "inherit-parent" },
+    "hardest tasks": { "model": "inherit-parent" },
+    "how explorer": { "model": "inherit-parent" },
+    "how explainer": { "model": "inherit-parent" },
+    "why investigators": { "model": "inherit-parent" },
+    "why synthesizer": { "model": "inherit-parent" },
+    "reflect tooling": { "model": "inherit-parent" },
+    "reflect judgment, divergent, synthesizer": { "model": "inherit-parent" },
+    "arena runners": [{ "model": "inherit-parent" }, { "model": "inherit-parent" }],
+    "arena cross-judge pool": [{ "model": "inherit-parent" }],
+    "swarm workers": { "model": "inherit-parent" },
+    "architect runners": [{ "model": "inherit-parent" }, { "model": "inherit-parent" }],
+    "interrogate reviewers": [{ "model": "inherit-parent" }, { "model": "inherit-parent" }]
+  }
+}

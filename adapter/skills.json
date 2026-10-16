@@ -70,9 +70,10 @@
     "allow_implicit_invocation": false
   },
   "make-bot-ui": {
-    "status": "pending",
+    "status": "deferred",
     "upstream_name": "Make Bot UI",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "reason": "No verified Codex equivalent for the upstream routine webhook protocol; specification workflow retained."
   },
   "no-comments": {
     "status": "pending",
@@ -90,122 +91,122 @@
     "allow_implicit_invocation": false
   },
   "principle-attack-the-premise": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-attack-the-premise",
     "allow_implicit_invocation": false
   },
   "principle-boundary-discipline": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-boundary-discipline",
     "allow_implicit_invocation": false
   },
   "principle-build-the-lever": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-build-the-lever",
     "allow_implicit_invocation": false
   },
   "principle-encode-lessons-in-structure": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-encode-lessons-in-structure",
     "allow_implicit_invocation": false
   },
   "principle-exhaust-the-design-space": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-exhaust-the-design-space",
     "allow_implicit_invocation": false
   },
   "principle-experience-first": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-experience-first",
     "allow_implicit_invocation": false
   },
   "principle-explain-the-number": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-explain-the-number",
     "allow_implicit_invocation": false
   },
   "principle-fix-root-causes": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-fix-root-causes",
     "allow_implicit_invocation": false
   },
   "principle-foundational-thinking": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-foundational-thinking",
     "allow_implicit_invocation": false
   },
   "principle-guard-the-context-window": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-guard-the-context-window",
     "allow_implicit_invocation": false
   },
   "principle-laziness-protocol": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-laziness-protocol",
     "allow_implicit_invocation": false
   },
   "principle-make-operations-idempotent": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-make-operations-idempotent",
     "allow_implicit_invocation": false
   },
   "principle-migrate-callers-then-delete-legacy-apis": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-migrate-callers-then-delete-legacy-apis",
     "allow_implicit_invocation": false
   },
   "principle-minimize-reader-load": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-minimize-reader-load",
     "allow_implicit_invocation": false
   },
   "principle-model-the-domain": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-model-the-domain",
     "allow_implicit_invocation": false
   },
   "principle-never-block-on-the-human": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-never-block-on-the-human",
     "allow_implicit_invocation": false
   },
   "principle-outcome-oriented-execution": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-outcome-oriented-execution",
     "allow_implicit_invocation": false
   },
   "principle-prove-it-works": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-prove-it-works",
     "allow_implicit_invocation": false
   },
   "principle-redesign-from-first-principles": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-redesign-from-first-principles",
     "allow_implicit_invocation": false
   },
   "principle-separate-before-serializing-shared-state": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-separate-before-serializing-shared-state",
     "allow_implicit_invocation": false
   },
   "principle-sequence-verifiable-units": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-sequence-verifiable-units",
     "allow_implicit_invocation": false
   },
   "principle-subtract-before-you-add": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-subtract-before-you-add",
     "allow_implicit_invocation": false
   },
   "principle-test-behavior-not-implementation": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-test-behavior-not-implementation",
     "allow_implicit_invocation": false
   },
   "principle-type-system-discipline": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "principle-type-system-discipline",
     "allow_implicit_invocation": false
   },
