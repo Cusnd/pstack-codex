@@ -16,7 +16,7 @@ def build(output: Path):
         raise ValueError('\n'.join(errors))
     plugin = ROOT / 'plugins/pstack-codex'
     skill_count = len(json.loads((ROOT / 'adapter/skills.json').read_text(encoding='utf-8')))
-    files = sorted(package_files(plugin))
+    files = sorted(package_files(plugin), key=lambda path: path.relative_to(plugin).as_posix())
     output = output.resolve()
     if output.is_relative_to(plugin.resolve()):
         raise ValueError('Archive must be outside the plugin source directory')
@@ -24,6 +24,7 @@ def build(output: Path):
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in files:
             entry = zipfile.ZipInfo(path.relative_to(plugin).as_posix(), (2026, 1, 1, 0, 0, 0))
+            entry.create_system = 3  # Stable Unix file metadata on every build host.
             entry.compress_type = zipfile.ZIP_DEFLATED
             entry.external_attr = 0o100644 << 16
             archive.writestr(entry, path.read_bytes())
