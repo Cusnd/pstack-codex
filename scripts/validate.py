@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 from pathlib import Path
 
@@ -10,6 +11,20 @@ import yaml
 SCHEMA = 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'
 ROOT = Path(__file__).resolve().parents[1]
 LEGACY = re.compile(r'~[/\\]\.cursor|subagent_type\s*:|run_in_background\s*:|cloud_base_branch\s*:|api2\.cursor\.sh/automations|claude-opus-[\w.-]+|grok-4\.[\w.-]+|cursor-team-kit')
+GENERATED_DIRS = {'node_modules', '__pycache__', '.venv', '.git'}
+
+
+def package_files(plugin: Path):
+    """The same source-only file selection is used by validation and packaging."""
+    for base, dirs, files in os.walk(plugin, followlinks=False):
+        for name in sorted(dirs):
+            path = Path(base) / name
+            if name not in GENERATED_DIRS and path.is_symlink():
+                yield path
+        dirs[:] = sorted(name for name in dirs if name not in GENERATED_DIRS and not (Path(base) / name).is_symlink())
+        for name in sorted(files):
+            if not name.endswith('.pyc'):
+                yield Path(base) / name
 
 
 def read_skill(path: Path) -> tuple[dict, str]:
@@ -68,13 +83,21 @@ def validate(root: Path = ROOT, metadata_only: bool = False) -> list[str]:
         except (ValueError, KeyError, TypeError, OSError, yaml.YAMLError) as exc:
             errors.append(f'{name}: {exc}')
     if not metadata_only:
-        for path in sorted(plugin.rglob('*')):
+        for path in package_files(plugin):
             if path.is_symlink():
                 errors.append(f'package symlink: {path.relative_to(plugin)}')
             if path.is_file() and path.suffix in {'.md', '.ts', '.js', '.mjs', '.sh'}:
                 for number, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
                     if LEGACY.search(line):
                         errors.append(f'{path.relative_to(plugin)}:{number}: unhandled Cursor runtime reference')
+                    if path.suffix == '.md':
+                        for target in re.findall(r'\[[^\]]*\]\(([^\s)]+)\)', line):
+                            target = target.split('#', 1)[0]
+                            if not target or ':' in target or '<' in target or target.startswith('/'):
+                                continue
+                            resolved = (path.parent / target).resolve()
+                            if not resolved.is_relative_to(plugin.resolve()) or not resolved.exists():
+                                errors.append(f'{path.relative_to(plugin)}:{number}: broken or escaping local link {target}')
         license_text = (plugin / 'LICENSE').read_text(encoding='utf-8')
         if 'Lauren Tan' not in license_text or 'MIT License' not in license_text:
             errors.append('upstream license attribution missing')

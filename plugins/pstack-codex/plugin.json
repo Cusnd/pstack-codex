@@ -27,7 +27,9 @@
         "developerName": "Cusnd; upstream by Lauren Tan",
         "category": "Developer Tools",
         "capabilities": [],
-        "defaultPrompt": "Use $poteto-mode to plan, implement, and verify this task."
+        "defaultPrompt": [
+          "Use $poteto-mode to plan, implement, and verify this task."
+        ]
       }
     }
   }

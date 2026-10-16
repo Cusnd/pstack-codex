@@ -1,73 +1,87 @@
 {
   "architect": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "architect",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "arena": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "arena",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "automate-me": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "automate-me",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "benchmark-checklist": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "benchmark-checklist",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "blast-radius": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "blast-radius",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "bro": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "bro",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "correct": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "correct",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "create-verification-skill": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "create-verification-skill",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "figure-it-out": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "figure-it-out",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "how": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "how",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "in-your-own-words": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "in-your-own-words",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "interrogate": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "interrogate",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "ketchup": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "ketchup",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "maintain-verification-skill": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "maintain-verification-skill",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "make-bot-ui": {
     "status": "deferred",
@@ -76,19 +90,22 @@
     "reason": "No verified Codex equivalent for the upstream routine webhook protocol; specification workflow retained."
   },
   "no-comments": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "no-comments",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "poteto-help": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "poteto-help",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "poteto-mode": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "Poteto Mode",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "principle-attack-the-premise": {
     "status": "adapted",
@@ -211,63 +228,75 @@
     "allow_implicit_invocation": false
   },
   "recall": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "recall",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "reflect": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "reflect",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "setup-pstack": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "setup-pstack",
-    "allow_implicit_invocation": true
+    "allow_implicit_invocation": true,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "sharpen": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "sharpen",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "show-me-your-work": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "show-me-your-work",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "swarm": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "swarm",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "tdd": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "tdd",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "teach": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "teach",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "technical-writing": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "technical-writing",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "typescript-best-practices": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "typescript-best-practices",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "unslop": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "unslop",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
   "why": {
-    "status": "pending",
+    "status": "adapted",
     "upstream_name": "why",
-    "allow_implicit_invocation": false
+    "allow_implicit_invocation": false,
+    "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   }
 }

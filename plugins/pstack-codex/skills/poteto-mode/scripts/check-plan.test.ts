@@ -55,7 +55,7 @@ const runPlan = (example: string, expectedExit: number) => {
 	const file = join(directory, "plan.md");
 	writeFileSync(file, validPlan + example);
 	try {
-		const result = spawnSync("node", [checker, file], { encoding: "utf8" });
+		const result = spawnSync(process.execPath, [checker, file], { encoding: "utf8" });
 		expect(result.status).toBe(expectedExit);
 		return result;
 	} finally {

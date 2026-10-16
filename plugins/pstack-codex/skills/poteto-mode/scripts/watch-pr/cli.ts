@@ -1,10 +1,7 @@
 import { setTimeout as delay } from "node:timers/promises";
-import {
-  Command,
-  CommanderError,
-  InvalidArgumentError,
-  Option,
-} from "commander";
+import { ensureDependenciesInstalled } from "../bootstrap.ts";
+const { Command, CommanderError, InvalidArgumentError, Option } =
+  await import(ensureDependenciesInstalled()) as typeof import("commander");
 import {
   GhGitHubReader,
   WatcherQueryError,

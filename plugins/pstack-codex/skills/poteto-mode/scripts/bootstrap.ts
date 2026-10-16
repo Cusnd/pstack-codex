@@ -1,62 +1,41 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { homedir } from "node:os";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 
-const scriptsDirectory = import.meta.dir;
-const nodeModulesDirectory = join(scriptsDirectory, "node_modules");
-const commanderPackagePath = join(
-  nodeModulesDirectory,
-  "commander",
-  "package.json"
-);
-const installKeyPath = join(
-  nodeModulesDirectory,
-  ".poteto-mode-tools-install-key"
-);
-
-function currentInstallKey(): string {
-  return createHash("sha256")
-    .update(readFileSync(join(scriptsDirectory, "package.json")))
-    .update("\0")
-    .update(readFileSync(join(scriptsDirectory, "bun.lock")))
-    .digest("hex");
-}
-
-export function ensureDependenciesInstalled(): void {
-  const installKey = currentInstallKey();
-  if (
-    existsSync(commanderPackagePath) &&
-    existsSync(installKeyPath) &&
-    readFileSync(installKeyPath, "utf8").trim() === installKey
-  ) {
-    return;
-  }
-
-  const result = Bun.spawnSync(
-    [process.execPath, "install", "--frozen-lockfile"],
-    { cwd: scriptsDirectory }
+// Installed plugin trees can be read-only. Never put dependencies in that tree.
+export function ensureDependenciesInstalled(): string {
+  const manifest = readFileSync(join(import.meta.dir, "package.json"));
+  const lock = readFileSync(join(import.meta.dir, "bun.lock"));
+  const key = createHash("sha256").update(manifest).update(lock)
+    .update(`${process.platform}:${process.arch}:${Bun.version}`).digest("hex");
+  const base = process.env.PSTACK_CACHE_DIR ?? join(
+    process.env.LOCALAPPDATA ?? process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache"), "pstack"
   );
-  if (result.exitCode !== 0) {
-    process.stdout.write(result.stdout);
-    process.stderr.write(result.stderr);
-    throw new Error(
-      `bun install --frozen-lockfile exited with status ${result.exitCode}`
-    );
+  const root = join(base, "tools");
+  const cache = join(root, key);
+  const marker = join(cache, ".ready");
+  if (!existsSync(marker)) {
+    mkdirSync(root, { recursive: true });
+    const staging = mkdtempSync(join(root, `${key}-install-`));
+    try {
+      writeFileSync(join(staging, "package.json"), manifest);
+      writeFileSync(join(staging, "bun.lock"), lock);
+      const result = Bun.spawnSync([process.execPath, "install", "--frozen-lockfile"], { cwd: staging });
+      if (result.exitCode !== 0) {
+        process.stderr.write(result.stderr);
+        throw new Error(`Dependency install failed (${result.exitCode}); cache: ${staging}`);
+      }
+      createRequire(join(staging, "package.json")).resolve("commander");
+      writeFileSync(join(staging, ".ready"), key);
+      try { renameSync(staging, cache); }
+      catch (error) { if (!existsSync(marker)) throw error; }
+    } finally {
+      // This exact directory was created above, beneath the selected cache root.
+      rmSync(staging, { recursive: true, force: true });
+    }
   }
-  if (!existsSync(commanderPackagePath)) {
-    throw new Error(
-      "bun install --frozen-lockfile completed without installing commander"
-    );
-  }
-
-  writeFileSync(installKeyPath, `${installKey}\n`);
-
-  const restarted = Bun.spawnSync([process.execPath, ...process.argv.slice(1)], {
-    cwd: process.cwd(),
-    env: process.env,
-    stdin: "inherit",
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  process.exit(restarted.exitCode ?? 1);
+  return pathToFileURL(createRequire(join(cache, "package.json")).resolve("commander")).href;
 }

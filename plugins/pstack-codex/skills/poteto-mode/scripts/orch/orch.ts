@@ -18,13 +18,13 @@ import {
   type Verdict,
 } from "./store.ts";
 
-ensureDependenciesInstalled();
+const commanderUrl = ensureDependenciesInstalled();
 const {
   Command: CommanderCommand,
   CommanderError,
   InvalidArgumentError,
   Option,
-} = await import("commander");
+} = await import(commanderUrl) as typeof import("commander");
 type Command = InstanceType<typeof CommanderCommand>;
 
 const DISPLAY_LIMIT = 4;

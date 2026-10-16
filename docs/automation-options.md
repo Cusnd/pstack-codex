@@ -1,6 +1,6 @@
 # Native scheduling before an external dispatcher
 
-Research checked on 2026-10-15 (America/Los_Angeles). This is a feasibility record, not a deployed automation.
+Research checked on 2026-10-15 (America/Los_Angeles). Native scheduled command execution has now been verified once. Recurring update automation is not yet enabled; see [the verification record](verification.md).
 
 The desired workflow is: read the `pstack` subtree SHA in `cursor/plugins`, compare it with the accepted source tree, adapt a changed pinned snapshot in a cloud coding environment, run checks, and return a draft pull request. A persistent external machine is not inherently required.
 
@@ -10,7 +10,7 @@ The desired workflow is: read the `pstack` subtree SHA in `cursor/plugins`, comp
 | --- | --- | --- |
 | Wake up | ChatGPT web scheduled task or supported GitHub event | Cloudflare Cron Trigger |
 | Decide whether work exists | Read the pinned subtree SHA and accepted lock using connected tools | Worker calls GitHub APIs and compares the subtree SHA |
-| Execute the adaptation | A scheduled continuation of a chat in the intended Codex Cloud environment, if verified | A supported Cloud submission interface; a short-lived CLI bridge only if necessary |
+| Execute the adaptation | A scheduled continuation of the Cloud chat (one-off command execution verified) | A supported Cloud submission interface; a short-lived CLI bridge only if necessary |
 
 Neither a timer nor a tree comparison needs a model. If a native scheduled chat invokes a model on every tick, it cannot meet the stricter optimization of zero model invocations while the upstream tree is unchanged. This is a tradeoff to measure, not a reason to claim native scheduling is unavailable.
 
@@ -18,7 +18,7 @@ Neither a timer nor a tree comparison needs a model. If a native scheduled chat 
 
 [Scheduled tasks](https://learn.chatgpt.com/docs/automations) supports web schedules and returning to an existing chat. Supported GitHub events concern pull request activity, including commit updates and merges; the list does not establish an arbitrary third-party repository path/tree-change trigger. Availability depends on the account and workspace. Desktop project tasks depend on a running computer.
 
-[Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments) supplies repository workspaces and runs while the local computer is asleep. The scheduling documentation does not explicitly establish that a scheduled chat continuation preserves this particular execution environment. Verify that combination with an actual run before promising it.
+[Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments) supplies repository workspaces and runs while the local computer is asleep. The scheduling documentation does not explicitly establish that a scheduled chat continuation preserves this particular execution environment. The actual one-off test described in verification.md confirmed scheduled command execution in the matching repository workspace; fresh VM identity was not exposed.
 
 [GitHub integration](https://learn.chatgpt.com/docs/third-party/github) can start a Legacy Cloud chat from a non-review `@codex` PR comment. It is not the same integration as the new Cloud environment flow. A human comment working does not prove that a bot-generated comment is accepted.
 
@@ -40,4 +40,4 @@ The Workers runtime is not a general Linux process host. Its Node child-process 
 4. Test no-change and changed-tree cases. Keep accepted source state separate from detected or in-flight state; advance the accepted lock only with the reviewed adaptation.
 5. If the native route fails, record the exact unsupported operation. Only then select a Cloudflare dispatcher and the smallest supported submission bridge.
 
-No Cloudflare resource, recurring schedule, release, automatic merge, or personal plugin installation has been enabled by this document.
+One native one-off schedule completed successfully. No Cloudflare resource, recurring schedule, release, automatic merge, or personal plugin installation is active. The blocking dependency is now managed Cloud proxy connectivity plus the GitHub API allowlist, not the absence of a native wake-up mechanism.
