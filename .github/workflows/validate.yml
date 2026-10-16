@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
-      PSTACK_CACHE_DIR: ${{ runner.temp }}/pstack-cache
+      PSTACK_CACHE_DIR: ${{ github.workspace }}/work/pstack-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
