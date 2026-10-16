@@ -1,0 +1,12 @@
+# Verify Cloud execution and native scheduled continuation
+
+This is a bounded infrastructure proof for the pstack port. Do not perform the remaining adaptation, install the plugin into a personal account, deploy, merge, create a PR, or send external messages. Never use Firecrawl.
+
+1. Read AGENTS.md, adapter/rules.md, and docs/automation-options.md. Record the current Cloud environment identity when exposed by the host, repository path, branch, and full Git HEAD. Do not infer a legacy environment ID from a chat ID.
+2. Confirm that the repository contains commit 6b94429 or a descendant. If the checkout is stale and clean, fetch origin and fast-forward the current branch to origin/main. Stop on a dirty or divergent checkout; never reset it. Use the published environment's Python virtualenv and Bun paths.
+3. Run metadata validation, the Python tests, and scripts/probe_upstream.py. The complete release validator is expected to fail while adaptation is pending; report it separately. Write a concise receipt under work/cloud-proof.json with the actual commands, exit codes, HEAD, and the two upstream tree SHAs. Do not change the accepted lock.
+4. Inspect the tools actually available in this Cloud chat for a native time-based continuation of this same chat. Record the documented execution target and any restriction. Do not substitute a local desktop heartbeat, create another coding chat as a subagent, invoke undocumented endpoints, or install an external runner.
+5. If a native tool explicitly supports scheduling a continuation of this Cloud chat, schedule exactly one callback about two minutes later. The callback must run pwd, git rev-parse HEAD, and scripts/probe_upstream.py in this Cloud environment, append actual results to work/cloud-proof.json, report the result, and end. It must not create another callback or recurring schedule. This one-off proof is authorized as part of configuring automated Cloud adaptation.
+6. If no such scheduling tool is available or its execution target is unsupported, do not claim that native Cloud scheduling is impossible globally. Report the precise capability missing in this environment, with the tool/schema evidence that establishes the limitation.
+
+Return the receipt location, command results, and either the one-off schedule identity and expected run time or the exact unsupported step. A successful initial run is not evidence that the scheduled continuation ran.
