@@ -1,16 +1,81 @@
 # pstack for Codex
 
-A maintained adaptation of [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack), with the original MIT license. Source and adaptation versions are tracked independently.
+A Codex adaptation of [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack): skills for understanding code, planning changes, implementing them, and checking the result against the user's goal.
 
-The first port is in progress. The normalized package contains 54 upstream skills with their invocation policy preserved, but it is not ready to install until runtime-specific instructions have been adapted and verification passes.
+**Alpha: `0.1.0-alpha.1`.** All 54 upstream skills are included. 53 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
 
-- `upstream/pstack`: untouched input at `upstream.lock.json`.
-- `plugins/pstack-codex`: the installable plugin directory once validated.
-- `adapter`: conversion rules and per-skill capability status.
-- `scripts`: validation, packaging, and update automation.
-- `tests`: behavior checks for adaptation and synchronization.
+## Install
 
-Use Python 3.11 or newer and install `requirements.txt`. Run `python scripts/validate.py --metadata-only` to check package metadata during the initial port. Run `python scripts/validate.py` for release eligibility. The latter deliberately fails while any skill is still pending.
+Use a Codex CLI with plugin support (tested with 0.160.0), Git, and an authenticated Codex account. The public repository does not require GitHub credentials to download.
 
-Cloudflare Workers is being evaluated for scheduled detection and coordination. Cloud execution, authentication, CI checks, and publication remain separate concerns. No automatic deployment or personal installation is enabled by this source import.
+```sh
+codex plugin marketplace add https://github.com/Cusnd/pstack-codex.git --ref v0.1.0-alpha.1
+codex plugin add pstack-codex@pstack-codex
+```
 
+Confirm the installation:
+
+```sh
+codex plugin list --marketplace pstack-codex --json
+```
+
+Open a **new chat** in your project after installation. If the desktop app has not refreshed its skills, restart it. The fixed tag keeps this installation on the reviewed alpha instead of following development changes.
+
+[Installation, prerequisites, migration, updates, and removal](docs/installation.md) · [Release downloads](https://github.com/Cusnd/pstack-codex/releases/tag/v0.1.0-alpha.1)
+
+## Use it
+
+Start with the exact skill name, **`poteto-mode`**:
+
+```text
+Use $poteto-mode to fix the blank page after login.
+Infer reasonable completion criteria from the project and explain key assumptions.
+Verify the actual login flow. Keep the changes local; do not commit or publish.
+```
+
+A goal is enough to start. Completion criteria, constraints, and relevant files help when you have them. The agent should inspect the project, state meaningful assumptions, and ask about product decisions that evidence cannot settle. User scope and host permissions still govern the work.
+
+| Need | Start with |
+| --- | --- |
+| Plan, implement, and verify a task | `$poteto-mode` |
+| Find the right workflow | `$poteto-help` |
+| Understand current code | `$how` |
+| Review a diff | `$interrogate` |
+| Explain a subsystem or change | `$teach` |
+| Improve prose | `$unslop` |
+| Configure optional project model preferences | `$setup-pstack` |
+
+Setup is optional; model choices inherit the current agent by default. Most skills require explicit invocation. Review panels and repeated attempts can increase usage. [Read the usage guide](docs/usage.md) for examples and capability boundaries.
+
+## What this package provides
+
+- Adapted skills, playbooks, principles, and portable helper scripts.
+- Preserved upstream invocation policy: 53 explicit-only entries, plus discoverable setup.
+- Runtime guidance for delegation, available models, scoped history, and verification.
+- Original MIT license and attribution. This is an independent adaptation, not an official OpenAI or Cursor product.
+
+It does not include a Cloud account, a running updater, or additional model/connector access. Use your host's own available capabilities. `make-bot-ui` does not deploy its original bot integration.
+
+## Development
+
+Python 3.11+ and Bun 1.3.14 are used for repository validation:
+
+```sh
+python -m pip install -r requirements.txt
+python scripts/validate.py
+python -m unittest discover -s tests -v
+cd plugins/pstack-codex/skills/poteto-mode/scripts
+bun install --frozen-lockfile
+bun test --timeout 30000 orch watch-pr check-plan.test.ts
+bun run typecheck
+cd ../../../../..
+python scripts/package.py
+```
+
+The ZIP filename follows the plugin manifest version. Dependencies and runtime caches are excluded. CI runs validation on Windows and Linux. Optional helper tools cache dependencies outside the installed plugin; see the [installation guide](docs/installation.md#optional-helper-tools).
+
+`upstream/pstack` is the unchanged upstream snapshot pinned in `upstream.lock.json`; `plugins/pstack-codex` is the maintained port. [Adaptation rules](adapter/rules.md) and [per-skill status](adapter/skills.json) track the differences. See [maintainer automation](docs/automation-options.md) for the separate, disabled-by-default update workflow.
+
+## License
+
+[MIT](LICENSE). Original pstack copyright © 2026 Lauren Tan. Codex adaptation maintained by [Cusnd](https://github.com/Cusnd). Preserve the original copyright and permission notice when redistributing.

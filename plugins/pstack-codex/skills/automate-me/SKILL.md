@@ -2,7 +2,7 @@
 name: automate-me
 description: Use for "automate me", "create/update/refresh my -mode skill", "turn/capture
   my preferences or working style into a skill", or wanting agents to follow how the
-  user works. Drafts or revises a personal -mode skill via create-skill + unslop,
+  user works. Drafts or revises a personal -mode skill via skill-creator + unslop,
   optionally pulling fresh evidence from recent transcripts.
 ---
 
@@ -71,12 +71,12 @@ Use available `skill-creator` guidance to author the skill. Placement:
 - Path: preserve the existing editable source. New project skills normally use `.agents/skills/<handle>-mode/SKILL.md`; use the personal skill location only when the user chooses personal scope. Do not write installed plugin caches.
 - Handle: the user's first name or chosen identifier.
 - Frontmatter `description`: trigger on their name + `/<handle>-mode` + "work in their style", not on generic keywords like "write code" or "review PR".
-- Frontmatter formatting: follow `create-skill`'s YAML rules. Keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
+- Frontmatter formatting: follow `skill-creator`'s YAML rules. Keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
 - Invocation policy: preserve the mode's explicit invocation behavior in `agents/openai.yaml` with `policy.allow_implicit_invocation: false`; change it only when the user requests automatic invocation.
 
 ### 5. Iterate on prose
 
-Apply the **unslop** skill and `create-skill`'s writing guidelines to every line.
+Apply the **unslop** skill and `skill-creator`'s writing guidelines to every line.
 
 Show the draft to the user and take feedback. Expect multiple iterations. Cut ruthlessly. A mode skill is not a manual.
 
@@ -95,12 +95,12 @@ For a repository-backed skill, work on an isolated branch/worktree and deliver a
 
 ## Evaluation
 
-A `-mode` skill is subjective output. A `create-skill`-style test/iterate benchmark loop isn't useful here. Vibe-check with the user: does it read like them? Did it miss anything? Then ship.
+A `-mode` skill is subjective output. A `skill-creator`-style test/iterate benchmark loop isn't useful here. Vibe-check with the user: does it read like them? Did it miss anything? Then ship.
 
 Run a description-optimization loop only if the skill's trigger accuracy turns out to be a problem in practice.
 
 ## When not to use
 
-- User wants a task-specific skill (not working conventions): `create-skill` alone, no mining required.
+- User wants a task-specific skill (not working conventions): `skill-creator` alone, no mining required.
 - User wants to capture one narrow workflow (e.g. "how I write commit messages"). That's a regular skill, not a mode skill.
 
