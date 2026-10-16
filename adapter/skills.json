@@ -1,0 +1,272 @@
+{
+  "architect": {
+    "status": "pending",
+    "upstream_name": "architect",
+    "allow_implicit_invocation": false
+  },
+  "arena": {
+    "status": "pending",
+    "upstream_name": "arena",
+    "allow_implicit_invocation": false
+  },
+  "automate-me": {
+    "status": "pending",
+    "upstream_name": "automate-me",
+    "allow_implicit_invocation": false
+  },
+  "benchmark-checklist": {
+    "status": "pending",
+    "upstream_name": "benchmark-checklist",
+    "allow_implicit_invocation": false
+  },
+  "blast-radius": {
+    "status": "pending",
+    "upstream_name": "blast-radius",
+    "allow_implicit_invocation": false
+  },
+  "bro": {
+    "status": "pending",
+    "upstream_name": "bro",
+    "allow_implicit_invocation": false
+  },
+  "correct": {
+    "status": "pending",
+    "upstream_name": "correct",
+    "allow_implicit_invocation": false
+  },
+  "create-verification-skill": {
+    "status": "pending",
+    "upstream_name": "create-verification-skill",
+    "allow_implicit_invocation": false
+  },
+  "figure-it-out": {
+    "status": "pending",
+    "upstream_name": "figure-it-out",
+    "allow_implicit_invocation": false
+  },
+  "how": {
+    "status": "pending",
+    "upstream_name": "how",
+    "allow_implicit_invocation": false
+  },
+  "in-your-own-words": {
+    "status": "pending",
+    "upstream_name": "in-your-own-words",
+    "allow_implicit_invocation": false
+  },
+  "interrogate": {
+    "status": "pending",
+    "upstream_name": "interrogate",
+    "allow_implicit_invocation": false
+  },
+  "ketchup": {
+    "status": "pending",
+    "upstream_name": "ketchup",
+    "allow_implicit_invocation": false
+  },
+  "maintain-verification-skill": {
+    "status": "pending",
+    "upstream_name": "maintain-verification-skill",
+    "allow_implicit_invocation": false
+  },
+  "make-bot-ui": {
+    "status": "pending",
+    "upstream_name": "Make Bot UI",
+    "allow_implicit_invocation": false
+  },
+  "no-comments": {
+    "status": "pending",
+    "upstream_name": "no-comments",
+    "allow_implicit_invocation": false
+  },
+  "poteto-help": {
+    "status": "pending",
+    "upstream_name": "poteto-help",
+    "allow_implicit_invocation": false
+  },
+  "poteto-mode": {
+    "status": "pending",
+    "upstream_name": "Poteto Mode",
+    "allow_implicit_invocation": false
+  },
+  "principle-attack-the-premise": {
+    "status": "pending",
+    "upstream_name": "principle-attack-the-premise",
+    "allow_implicit_invocation": false
+  },
+  "principle-boundary-discipline": {
+    "status": "pending",
+    "upstream_name": "principle-boundary-discipline",
+    "allow_implicit_invocation": false
+  },
+  "principle-build-the-lever": {
+    "status": "pending",
+    "upstream_name": "principle-build-the-lever",
+    "allow_implicit_invocation": false
+  },
+  "principle-encode-lessons-in-structure": {
+    "status": "pending",
+    "upstream_name": "principle-encode-lessons-in-structure",
+    "allow_implicit_invocation": false
+  },
+  "principle-exhaust-the-design-space": {
+    "status": "pending",
+    "upstream_name": "principle-exhaust-the-design-space",
+    "allow_implicit_invocation": false
+  },
+  "principle-experience-first": {
+    "status": "pending",
+    "upstream_name": "principle-experience-first",
+    "allow_implicit_invocation": false
+  },
+  "principle-explain-the-number": {
+    "status": "pending",
+    "upstream_name": "principle-explain-the-number",
+    "allow_implicit_invocation": false
+  },
+  "principle-fix-root-causes": {
+    "status": "pending",
+    "upstream_name": "principle-fix-root-causes",
+    "allow_implicit_invocation": false
+  },
+  "principle-foundational-thinking": {
+    "status": "pending",
+    "upstream_name": "principle-foundational-thinking",
+    "allow_implicit_invocation": false
+  },
+  "principle-guard-the-context-window": {
+    "status": "pending",
+    "upstream_name": "principle-guard-the-context-window",
+    "allow_implicit_invocation": false
+  },
+  "principle-laziness-protocol": {
+    "status": "pending",
+    "upstream_name": "principle-laziness-protocol",
+    "allow_implicit_invocation": false
+  },
+  "principle-make-operations-idempotent": {
+    "status": "pending",
+    "upstream_name": "principle-make-operations-idempotent",
+    "allow_implicit_invocation": false
+  },
+  "principle-migrate-callers-then-delete-legacy-apis": {
+    "status": "pending",
+    "upstream_name": "principle-migrate-callers-then-delete-legacy-apis",
+    "allow_implicit_invocation": false
+  },
+  "principle-minimize-reader-load": {
+    "status": "pending",
+    "upstream_name": "principle-minimize-reader-load",
+    "allow_implicit_invocation": false
+  },
+  "principle-model-the-domain": {
+    "status": "pending",
+    "upstream_name": "principle-model-the-domain",
+    "allow_implicit_invocation": false
+  },
+  "principle-never-block-on-the-human": {
+    "status": "pending",
+    "upstream_name": "principle-never-block-on-the-human",
+    "allow_implicit_invocation": false
+  },
+  "principle-outcome-oriented-execution": {
+    "status": "pending",
+    "upstream_name": "principle-outcome-oriented-execution",
+    "allow_implicit_invocation": false
+  },
+  "principle-prove-it-works": {
+    "status": "pending",
+    "upstream_name": "principle-prove-it-works",
+    "allow_implicit_invocation": false
+  },
+  "principle-redesign-from-first-principles": {
+    "status": "pending",
+    "upstream_name": "principle-redesign-from-first-principles",
+    "allow_implicit_invocation": false
+  },
+  "principle-separate-before-serializing-shared-state": {
+    "status": "pending",
+    "upstream_name": "principle-separate-before-serializing-shared-state",
+    "allow_implicit_invocation": false
+  },
+  "principle-sequence-verifiable-units": {
+    "status": "pending",
+    "upstream_name": "principle-sequence-verifiable-units",
+    "allow_implicit_invocation": false
+  },
+  "principle-subtract-before-you-add": {
+    "status": "pending",
+    "upstream_name": "principle-subtract-before-you-add",
+    "allow_implicit_invocation": false
+  },
+  "principle-test-behavior-not-implementation": {
+    "status": "pending",
+    "upstream_name": "principle-test-behavior-not-implementation",
+    "allow_implicit_invocation": false
+  },
+  "principle-type-system-discipline": {
+    "status": "pending",
+    "upstream_name": "principle-type-system-discipline",
+    "allow_implicit_invocation": false
+  },
+  "recall": {
+    "status": "pending",
+    "upstream_name": "recall",
+    "allow_implicit_invocation": false
+  },
+  "reflect": {
+    "status": "pending",
+    "upstream_name": "reflect",
+    "allow_implicit_invocation": false
+  },
+  "setup-pstack": {
+    "status": "pending",
+    "upstream_name": "setup-pstack",
+    "allow_implicit_invocation": true
+  },
+  "sharpen": {
+    "status": "pending",
+    "upstream_name": "sharpen",
+    "allow_implicit_invocation": false
+  },
+  "show-me-your-work": {
+    "status": "pending",
+    "upstream_name": "show-me-your-work",
+    "allow_implicit_invocation": false
+  },
+  "swarm": {
+    "status": "pending",
+    "upstream_name": "swarm",
+    "allow_implicit_invocation": false
+  },
+  "tdd": {
+    "status": "pending",
+    "upstream_name": "tdd",
+    "allow_implicit_invocation": false
+  },
+  "teach": {
+    "status": "pending",
+    "upstream_name": "teach",
+    "allow_implicit_invocation": false
+  },
+  "technical-writing": {
+    "status": "pending",
+    "upstream_name": "technical-writing",
+    "allow_implicit_invocation": false
+  },
+  "typescript-best-practices": {
+    "status": "pending",
+    "upstream_name": "typescript-best-practices",
+    "allow_implicit_invocation": false
+  },
+  "unslop": {
+    "status": "pending",
+    "upstream_name": "unslop",
+    "allow_implicit_invocation": false
+  },
+  "why": {
+    "status": "pending",
+    "upstream_name": "why",
+    "allow_implicit_invocation": false
+  }
+}

@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.wrangler/
+.env
+.env.*
+!.env.example
+.dev.vars*
+auth.json
+work/
+dist/
+
