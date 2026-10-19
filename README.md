@@ -2,7 +2,9 @@
 
 A Codex adaptation of [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack): skills for understanding code, planning changes, implementing them, and checking the result against the user's goal.
 
-**Alpha: `0.1.0-alpha.1`.** All 54 upstream skills are included. 53 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
+**Development candidate: `0.1.0-alpha.2` (not yet released).** This checkout tracks upstream 0.15.27 and includes all 55 skills. 54 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
+
+The latest published release is still `0.1.0-alpha.1`, which includes 54 skills and tracks upstream 0.15.25. The installation commands below intentionally select that published tag. A maintenance PR does not upgrade installed copies.
 
 ## Install
 
@@ -50,7 +52,7 @@ Setup is optional; model choices inherit the current agent by default. Most skil
 ## What this package provides
 
 - Adapted skills, playbooks, principles, and portable helper scripts.
-- Preserved upstream invocation policy: 53 explicit-only entries, plus discoverable setup.
+- Preserved upstream invocation policy: 54 explicit-only entries, plus discoverable setup in the development candidate.
 - Runtime guidance for delegation, available models, scoped history, and verification.
 - Original MIT license and attribution. This is an independent adaptation, not an official OpenAI or Cursor product.
 
@@ -74,7 +76,7 @@ python scripts/package.py
 
 The ZIP filename follows the plugin manifest version. Dependencies and runtime caches are excluded. CI runs validation on Windows and Linux. Optional helper tools cache dependencies outside the installed plugin; see the [installation guide](docs/installation.md#optional-helper-tools).
 
-`upstream/pstack` is the unchanged upstream snapshot pinned in `upstream.lock.json`; `plugins/pstack-codex` is the maintained port. [Adaptation rules](adapter/rules.md) and [per-skill status](adapter/skills.json) track the differences. See [maintainer automation](docs/automation-options.md) for the separate, disabled-by-default update workflow.
+`upstream/pstack` is the unchanged upstream snapshot pinned in `upstream.lock.json`; `plugins/pstack-codex` is the maintained port. [Adaptation rules](adapter/rules.md) and [per-skill status](adapter/skills.json) track the differences. See [maintainer automation](docs/automation-options.md) for the separately configured update workflow.
 
 ## License
 

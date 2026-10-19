@@ -41,6 +41,12 @@
     "allow_implicit_invocation": false,
     "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
+  "create-formal-verification-skill": {
+    "status": "adapted",
+    "upstream_name": "create-formal-verification-skill",
+    "allow_implicit_invocation": false,
+    "validation": "Codex project-local skill path and explicit invocation policy; model-checker/prover execution remains dependent on the project and host."
+  },
   "create-verification-skill": {
     "status": "adapted",
     "upstream_name": "create-verification-skill",
@@ -85,7 +91,7 @@
   },
   "make-bot-ui": {
     "status": "deferred",
-    "upstream_name": "Make Bot UI",
+    "upstream_name": "make-bot-ui",
     "allow_implicit_invocation": false,
     "reason": "No verified Codex equivalent for the upstream routine webhook protocol; specification workflow retained."
   },
@@ -103,7 +109,7 @@
   },
   "poteto-mode": {
     "status": "adapted",
-    "upstream_name": "Poteto Mode",
+    "upstream_name": "poteto-mode",
     "allow_implicit_invocation": false,
     "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },

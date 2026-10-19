@@ -26,6 +26,7 @@ Useful optional context: relevant files, a reproduction, constraints, expected b
 | `Use $interrogate to review this diff and report actionable findings.` | Review changes; independent reviewers depend on the host's delegation support |
 | `Use $teach to explain why this change works.` | Explain the mechanism and reasoning |
 | `Use $unslop to rewrite this paragraph while preserving its meaning.` | Improve prose |
+| `Use $create-formal-verification-skill to check the retry queue's delivery invariant.` | In the development candidate, verify one property within explicit bounds and leave a reusable project skill |
 
 See the complete [skill guide](../plugins/pstack-codex/skills/poteto-help/SKILL.md) and [playbook index](../plugins/pstack-codex/skills/poteto-mode/SKILL.md).
 
@@ -38,6 +39,8 @@ Use $setup-pstack. Keep every role on the inherited model and explain the defaul
 Setup manages optional project preferences in `.codex/pstack/config.json`. This is a plugin convention, not a native global Codex model-routing setting. Without it, roles inherit the current model and reasoning configuration. Explicit overrides require both a real available model and host support.
 
 Review panels and repeated attempts consume additional usage. The plugin does not bypass account limits, host permissions, or repository instructions.
+
+Setup offers a missing app verification workflow and a missing formal verification workflow once each. Accepting one starts its generator; declining does not block setup. The formal verification skill chooses a tool from the property and code. Generated-input tests are a fallback when no suitable code verifier exists and must not be reported as a formal proof.
 
 ## Capability boundaries
 
