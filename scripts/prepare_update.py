@@ -3,11 +3,13 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import subprocess
 import tarfile
+import tempfile
 from pathlib import Path, PurePosixPath
 
-from probe_upstream import ROOT, probe
+from probe_upstream import ROOT, probe, sha
 
 
 def git(repo: Path, *args: str) -> bytes:
@@ -39,15 +41,55 @@ def extract_snapshot(data: bytes, destination: Path):
                 target.chmod(member.mode & 0o777)
 
 
-def prepare() -> dict:
-    lock = json.loads((ROOT / 'upstream.lock.json').read_text(encoding='utf-8'))
+def verify_candidate(candidate: Path, receipt: dict, expected: dict, data: bytes, delta: bytes):
+    """Reuse only a complete receipt, patch, and exact pinned source snapshot."""
+    for key, value in expected.items():
+        if key != 'candidate_directory' and receipt.get(key) != value:
+            raise ValueError(f'Existing candidate receipt mismatch: {key}')
+    if candidate.is_symlink():
+        raise ValueError('Candidate directory must not be a symlink')
+    with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+        members = {member.name.rstrip('/'): member for member in archive.getmembers()}
+        actual = {path.relative_to(candidate).as_posix(): path for path in candidate.rglob('*')}
+        if set(actual) != set(members) | {'receipt.json', 'upstream.patch'}:
+            raise ValueError('Existing candidate is incomplete or contains unexpected files')
+        if any(path.is_symlink() for path in actual.values()):
+            raise ValueError('Existing candidate contains a symlink')
+        for name, member in members.items():
+            path = actual[name]
+            if member.isdir():
+                matches = path.is_dir()
+            elif member.isfile():
+                matches = path.is_file() and path.read_bytes() == archive.extractfile(member).read()
+                if os.name != 'nt':
+                    matches = matches and (path.stat().st_mode & 0o111) == (member.mode & 0o111)
+            else:
+                matches = False
+            if not matches:
+                raise ValueError(f'Existing candidate source mismatch: {name}')
+    if (candidate / 'upstream.patch').read_bytes() != delta:
+        raise ValueError('Existing candidate patch differs from the pinned source diff')
+
+
+def prepare(root: Path = ROOT) -> dict:
+    lock = json.loads((root / 'upstream.lock.json').read_text(encoding='utf-8'))
     result = probe(lock)
     if not result['changed']:
         return {'ok': True, **result, 'prepared': False}
-    candidate = ROOT / 'work/candidates' / result['candidate_tree']
+    candidate = root / 'work/candidates' / result['candidate_tree']
+    existing = None
+    if candidate.is_symlink():
+        raise ValueError('Candidate directory must not be a symlink')
     if candidate.exists():
-        raise ValueError(f'Candidate directory already exists; inspect and reuse its receipt: {candidate}')
-    cache = ROOT / 'work/upstream-git'
+        receipt_path = candidate / 'receipt.json'
+        if not receipt_path.is_file() or receipt_path.is_symlink():
+            raise ValueError('Existing candidate is incomplete; preserve it for inspection')
+        existing = json.loads(receipt_path.read_text(encoding='utf-8'))
+        if not isinstance(existing, dict) or existing.get('candidate_tree') != result['candidate_tree']:
+            raise ValueError('Existing candidate receipt does not identify this source tree')
+        # Unrelated upstream commits can move main without changing pstack.
+        result['candidate_commit'] = sha(existing.get('candidate_commit'))
+    cache = root / 'work/upstream-git'
     cache.mkdir(parents=True, exist_ok=True)
     if not (cache / '.git').exists():
         git(cache, 'init')
@@ -59,15 +101,30 @@ def prepare() -> dict:
     if observed != result['candidate_tree']:
         raise ValueError('Fetched subtree does not match the pinned detection result')
     data = git(cache, 'archive', '--format=tar', result['candidate_commit'], 'pstack')
-    extract_snapshot(data, candidate)
     delta = git(cache, 'diff', '--no-ext-diff', '--binary', result['accepted_commit'], result['candidate_commit'], '--', 'pstack')
-    (candidate / 'upstream.patch').write_bytes(delta)
-    version = json.loads((candidate / 'pstack/.cursor-plugin/plugin.json').read_text(encoding='utf-8'))['version']
+    with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+        version = json.load(archive.extractfile('pstack/.cursor-plugin/plugin.json'))['version']
     receipt = {'ok': True, **result, 'prepared': True, 'candidate_directory': str(candidate),
                'proposed_lock': {**lock, 'commit': result['candidate_commit'], 'tree': observed, 'version': version},
                'accepted_lock_modified': False}
-    (candidate / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
-    return receipt
+    if existing is not None:
+        verify_candidate(candidate, existing, receipt, data, delta)
+        return {**receipt, 'reused': True}
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='.prepare-', dir=candidate.parent) as scratch:
+        staged = Path(scratch) / 'candidate'
+        extract_snapshot(data, staged)
+        (staged / 'upstream.patch').write_bytes(delta)
+        (staged / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+        try:
+            staged.rename(candidate)
+        except OSError:
+            if not candidate.is_dir() or candidate.is_symlink():
+                raise
+            existing = json.loads((candidate / 'receipt.json').read_text(encoding='utf-8'))
+            verify_candidate(candidate, existing, receipt, data, delta)
+            return {**receipt, 'reused': True}
+    return {**receipt, 'reused': False}
 
 
 if __name__ == '__main__':

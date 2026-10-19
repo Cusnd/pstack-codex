@@ -27,4 +27,6 @@ Write the approved or already-requested changes to the project config, preservin
 
 ## 4. Check verification coverage
 
-Inspect the project's existing harness or `verify-*` skill. If the user wants a reusable verification workflow and one is missing, use the sibling `create-verification-skill`. Do not add a verification framework or start a separate task merely because setup ran.
+Inspect the project's existing harness or `verify-*` skill. If one is missing, offer once to generate a project-local workflow with the sibling `create-verification-skill`. Run it on acceptance; on refusal, move on without pushing. Do not add a verification framework or start a separate task merely because setup ran.
+
+Also check whether the project has a skill that runs a model checker, proof, or another formal verifier. If not, offer once to generate one with [create-formal-verification-skill](../create-formal-verification-skill/SKILL.md), so agents can check a key property in every case within a stated scope. Run it on acceptance or an existing explicit request; otherwise continue without creating it.

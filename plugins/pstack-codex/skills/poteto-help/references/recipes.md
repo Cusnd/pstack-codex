@@ -33,6 +33,8 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 
 ## Review and ship
 
+- `$create-formal-verification-skill prove <property> holds in <module>, even when <steps> interleave or retry.`
+
 - `$interrogate the whole branch, but skeptically. don't change anything yet. no nitpicks unless it's a real bug or regression.` Read the dismissals too.
 - `$swarm check every package under <dir> against its check script. one worker per package. one report.`
 - `$poteto-mode open the pr. small ordered commits, evidence in the description.`
@@ -40,6 +42,8 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 - `$poteto-mode land the stack.`
 
 ## Away and back
+
+- `$ketchup` catches you up on this chat since your last message and lists every call that waits on you.
 
 - `$poteto-mode im going to bed. <goal> in a fresh worktree off <base>. done means <checks>. keep a decision log. don't ask me before committing. continue until done using the supported scheduling mechanism when a future wakeup is needed. if you're truly stuck after a few hours, stop and write up why.`
 - `$show-me-your-work catch me up on what you did last night.` Read its Attention section first.
