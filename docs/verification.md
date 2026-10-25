@@ -4,8 +4,8 @@ The release is an independently maintained Codex adaptation, not a certification
 
 ## Package and scripts
 
-- The development candidate retains all 55 upstream skills and their invocation policy: 54 explicit-only entries and discoverable setup.
-- 54 skills have adapted instructions. `make-bot-ui` explicitly defers the original service-specific integration.
+- The development candidate retains all 58 upstream skills and their invocation policy: 57 explicit-only entries and discoverable setup.
+- 57 skills have adapted instructions. `make-bot-ui` explicitly defers the original service-specific integration.
 - Validation checks metadata, inventory, local skill links, runtime references, marketplace source, and MIT attribution.
 - The Python suite covers source probing, failed/incomplete responses, extraction boundaries, paths containing spaces, worktree preservation, PR state handling, and decision logging.
 - Preparation tests also cover repeat reuse, unrelated upstream commits with the same subtree, damaged receipts/source/diffs, interrupted preparation, and preservation of the accepted lock.
@@ -22,6 +22,9 @@ Separately, a scheduled continuation in ChatGPT Work on 2026-10-19 ran `pwd`, `g
 These observations do not prove exact timer accuracy or long-term reliability. Installing this package does not enable a recurring updater. Personal environment, chat, schedule, and execution receipts are not part of the public documentation or release assets.
 
 ## Known limitations
+
+- Statechart needs Node 22.15+ (Node 24 in CI), Java 11+, TLC 1.7.4, and optional pinned npm renderers. A checked fixture with only TypeOK is not proof of application correctness; inspect each model's rules, bounds, and real-code replay. The source suite includes platform-specific process, namespace, font, and fault-injection tests; record unavailable coverage explicitly.
+- Ketchup video needs an actual encoder and frame-inspection capability. If unavailable, the skill returns actionable text with the rendering gap, not a claimed video.
 
 - Every adapted skill has not been exercised in a live desktop chat. Agent outcomes still depend on the task, model, project, and available tools.
 - macOS script execution has not been verified; CI covers Windows and Linux.

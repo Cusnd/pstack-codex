@@ -1,0 +1,6 @@
+interface:
+  display_name: "Ketchup Video"
+  short_description: "Catch up with evidence-led silent slides"
+  default_prompt: "Use $ketchup-video to show what changed and list the waiting decisions."
+policy:
+  allow_implicit_invocation: false

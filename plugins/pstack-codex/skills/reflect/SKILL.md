@@ -41,6 +41,8 @@ Present the synthesizer's full Accepted / Rejected / Backlog output and wait for
 
 Present Backlog items locally. File them in an external tracker only when the user has authorized that destination and action. Apply approved skill changes to editable source, never an installed plugin cache. Personal memory changes require an explicit user request.
 
+Before approval, name the editable destination, such as the project's `.agents/skills/<skill>/` or the host's supported personal skill source. If only an installed cache exists, copy the approved skill into that destination and edit the copy. Reflect alone does not authorize opening a PR or pushing a repository; follow explicit user scope and the host's normal skill-saving requirements.
+
 Follow each approved row's Routing exactly:
 
 - Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): the parent does it directly.
