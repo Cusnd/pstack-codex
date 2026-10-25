@@ -83,6 +83,18 @@
     "allow_implicit_invocation": false,
     "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
   },
+  "ketchup-video": {
+    "status": "adapted",
+    "upstream_name": "ketchup-video",
+    "allow_implicit_invocation": false,
+    "validation": "Explicit-only; rendering and frame inspection use actual host capabilities, with an honest text fallback. Live media execution is host-dependent."
+  },
+  "maintain-formal-verification-skill": {
+    "status": "adapted",
+    "upstream_name": "maintain-formal-verification-skill",
+    "allow_implicit_invocation": false,
+    "validation": "Coverage/sync-commit maintenance preserves proof scope, reports bugs separately from drift, and isolates mutation tests from product code. Verifier availability is host-dependent."
+  },
   "maintain-verification-skill": {
     "status": "adapted",
     "upstream_name": "maintain-verification-skill",
@@ -262,6 +274,12 @@
     "upstream_name": "show-me-your-work",
     "allow_implicit_invocation": false,
     "validation": "Source adapted to the Codex runtime contract; package checks cover metadata and links. Workflow execution depends on available host tools."
+  },
+  "statechart": {
+    "status": "adapted",
+    "upstream_name": "statechart",
+    "allow_implicit_invocation": false,
+    "validation": "TLC, statechart, and render helpers retained; caches stay outside installed source. Requires Node, Java, pinned TLC and optional PNG packages. Host and test evidence is documented separately."
   },
   "swarm": {
     "status": "adapted",

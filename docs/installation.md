@@ -13,12 +13,12 @@ The plugin has no API key or MCP connection of its own. You use your existing Co
 These commands work in PowerShell and POSIX shells:
 
 ```sh
-codex plugin marketplace add https://github.com/Cusnd/pstack-codex.git --ref v0.1.0-alpha.1
+codex plugin marketplace add https://github.com/Cusnd/pstack-codex.git --ref v0.1.0-alpha.2
 codex plugin add pstack-codex@pstack-codex
 codex plugin list --marketplace pstack-codex --json
 ```
 
-The list should include `pstack-codex`, version `0.1.0-alpha.1`, installed and enabled. Start a new project chat, then send:
+The list should include `pstack-codex`, version `0.1.0-alpha.2`, installed and enabled. Start a new project chat, then send:
 
 ```text
 Use $poteto-help to explain the available workflows. Do not change project files.
@@ -64,7 +64,7 @@ Then follow the fixed-alpha installation above. The public alpha version is inte
 
 ## ZIP download
 
-The [release](https://github.com/Cusnd/pstack-codex/releases/tag/v0.1.0-alpha.1) includes a source-only Agent Plugins 1.0 ZIP and SHA-256 checksum. Use it for inspection or a host's documented archive import flow. The verified Codex installation route is the Git marketplace command above; the ZIP is not a standalone executable installer. GitHub's automatically generated source archives contain the entire repository and are different from the plugin ZIP.
+The [release](https://github.com/Cusnd/pstack-codex/releases/tag/v0.1.0-alpha.2) includes a source-only Agent Plugins 1.0 ZIP and SHA-256 checksum. Use it for inspection or a host's documented archive import flow. The verified Codex installation route is the Git marketplace command above; the ZIP is not a standalone executable installer. GitHub's automatically generated source archives contain the entire repository and are different from the plugin ZIP.
 
 ## Uninstall
 

@@ -20,6 +20,8 @@ The upstream invocation policy is preserved. Only setup-pstack is implicitly dis
 
 If no project `verify-*` skill or app harness exists, recommend [create-verification-skill](../create-verification-skill/SKILL.md) when the question is about proving behavior. If no formal verification skill exists, recommend [create-formal-verification-skill](../create-formal-verification-skill/SKILL.md) for races, invariants, and cases that tests rarely reach. Setup offers each missing workflow once; creating one requires acceptance or an existing explicit request.
 
+If a formal check exists but covered code changed after its recorded sync commit, recommend [$maintain-formal-verification-skill](../maintain-formal-verification-skill/SKILL.md). For a TLA+ result or a behavior chart, use [$statechart](../statechart/SKILL.md) and report unavailable verifier/rendering capabilities explicitly.
+
 ## Start a task
 
 `$poteto-mode` selects a playbook, records its steps in the available planner or checklist, and invokes the skills those steps require. A skipped step retains a concrete reason. Start each new task with the skill or an explicit request to continue its workflow; do not promise Cursor Custom Mode keyboard shortcuts in Codex.
@@ -34,12 +36,13 @@ Read [prompting](references/prompting.md) and [recipes](references/recipes.md) b
 |---|---|
 | Do any non-trivial task with rigor | [`$poteto-mode`](../poteto-mode/SKILL.md) |
 | Check that the agent understood their goal and the problem before it starts | [`$in-your-own-words`](../in-your-own-words/SKILL.md) |
-| Aim a task higher before starting: more expert, more outcome-focused, not overspecified | [`$sharpen`](../sharpen/SKILL.md) |
+| Rewrite a prompt deeper, not bigger, with expert methods and an outside check; return the prompt without executing it | [`$sharpen`](../sharpen/SKILL.md) |
 | Know how code works now, or where new code should live | [`$how`](../how/SKILL.md) |
 | Know why code is shaped this way, or where a number came from | [`$why`](../why/SKILL.md) |
 | Understand a change or subsystem, explained plainly | [`$teach`](../teach/SKILL.md) |
 | Catch up on their own recent work on a topic | [`$recall`](../recall/SKILL.md) |
 | Catch up on what changed in this chat since their last message, in plain words and small visuals, with every waiting item listed and decidable from the reply alone | [`$ketchup`](../ketchup/SKILL.md) |
+| Catch up with short silent evidence-led slides and waiting decisions below the video | [`$ketchup-video`](../ketchup-video/SKILL.md) |
 | Know what a small diff could break outside itself | [`$blast-radius`](../blast-radius/SKILL.md) |
 | Settle types and module shape before code that crosses a function boundary | [`$architect`](../architect/SKILL.md) |
 | Get several attempts at one brief, merged into the best one | [`$arena`](../arena/SKILL.md) |
@@ -54,6 +57,8 @@ Read [prompting](references/prompting.md) and [recipes](references/recipes.md) b
 | Give agents a scripted way to drive the app and prove behavior | [`$create-verification-skill`](../create-verification-skill/SKILL.md) |
 | Bring a verification skill and its feature map back in line with the app | [`$maintain-verification-skill`](../maintain-verification-skill/SKILL.md) |
 | Formally verify a race, invariant, or other property that tests rarely reach | [`$create-formal-verification-skill`](../create-formal-verification-skill/SKILL.md) |
+| Resync formal verification after code changes, distinguishing drift from product bugs | [`$maintain-formal-verification-skill`](../maintain-formal-verification-skill/SKILL.md) |
+| Explain checked states and bug paths, turn an agreed chart into TLA+, or audit code against a spec | [`$statechart`](../statechart/SKILL.md) |
 | Vet a performance number before reporting or acting on it | [`$benchmark-checklist`](../benchmark-checklist/SKILL.md) |
 | Run a large or cross-cutting change, or one to review after stepping away | [`$figure-it-out`](../figure-it-out/SKILL.md) |
 | Keep a decision log during a run, and review it afterward | [`$show-me-your-work`](../show-me-your-work/SKILL.md) |

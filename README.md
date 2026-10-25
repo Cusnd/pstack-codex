@@ -2,16 +2,16 @@
 
 A Codex adaptation of [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack): skills for understanding code, planning changes, implementing them, and checking the result against the user's goal.
 
-**This checkout: `0.1.0-alpha.2`.** This checkout tracks upstream 0.15.27 and includes all 55 skills. 54 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
+**Development candidate: `0.1.0-alpha.3` (pending publication).** This checkout tracks upstream 0.15.32 and includes all 58 skills. 57 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
 
-Check [GitHub Releases](https://github.com/Cusnd/pstack-codex/releases) for publication status; a version in main is not proof that publication succeeded. The installation commands below intentionally remain pinned to the original `0.1.0-alpha.1` release (54 skills, upstream 0.15.25). A maintenance PR or new release does not upgrade installed copies.
+Check [GitHub Releases](https://github.com/Cusnd/pstack-codex/releases) for publication status; a version in main is not proof that publication succeeded. The installation commands below are pinned to the published `0.1.0-alpha.2` release (55 skills, upstream 0.15.27), not this pending alpha.3 candidate. A maintenance PR or new release does not upgrade installed copies.
 
 ## Install
 
 Use a Codex CLI with plugin support (tested with 0.160.0), Git, and an authenticated Codex account. The public repository does not require GitHub credentials to download.
 
 ```sh
-codex plugin marketplace add https://github.com/Cusnd/pstack-codex.git --ref v0.1.0-alpha.1
+codex plugin marketplace add https://github.com/Cusnd/pstack-codex.git --ref v0.1.0-alpha.2
 codex plugin add pstack-codex@pstack-codex
 ```
 
@@ -23,7 +23,7 @@ codex plugin list --marketplace pstack-codex --json
 
 Open a **new chat** in your project after installation. If the desktop app has not refreshed its skills, restart it. The fixed tag keeps this installation on the reviewed alpha instead of following development changes.
 
-[Installation, prerequisites, migration, updates, and removal](docs/installation.md) · [Release downloads](https://github.com/Cusnd/pstack-codex/releases/tag/v0.1.0-alpha.1)
+[Installation, prerequisites, migration, updates, and removal](docs/installation.md) · [Release downloads](https://github.com/Cusnd/pstack-codex/releases/tag/v0.1.0-alpha.2)
 
 ## Use it
 
@@ -52,7 +52,7 @@ Setup is optional; model choices inherit the current agent by default. Most skil
 ## What this package provides
 
 - Adapted skills, playbooks, principles, and portable helper scripts.
-- Preserved upstream invocation policy: 54 explicit-only entries, plus discoverable setup in the development candidate.
+- Preserved upstream invocation policy: 57 explicit-only entries, plus discoverable setup in the development candidate.
 - Runtime guidance for delegation, available models, scoped history, and verification.
 - Original MIT license and attribution. This is an independent adaptation, not an official OpenAI or Cursor product.
 
@@ -66,6 +66,7 @@ Python 3.11+ and Bun 1.3.14 are used for repository validation:
 python -m pip install -r requirements.txt
 python scripts/validate.py
 python -m unittest discover -s tests -v
+python scripts/setup_statechart.py
 cd plugins/pstack-codex/skills/poteto-mode/scripts
 bun install --frozen-lockfile
 bun test --timeout 30000 orch watch-pr check-plan.test.ts
@@ -75,6 +76,8 @@ python scripts/package.py
 ```
 
 The ZIP filename follows the plugin manifest version. Dependencies and runtime caches are excluded. CI runs validation on Windows and Linux. Optional helper tools cache dependencies outside the installed plugin; see the [installation guide](docs/installation.md#optional-helper-tools).
+
+The statechart suite additionally uses Node 24 and Java 17. Set `TLA2TOOLS` to the absolute `work/tools/tla2tools.jar` path and `PSTACK_CACHE_DIR` to an external writable cache, then run `node --test plugins/pstack-codex/skills/statechart/scripts/test/statechart.test.mjs`. Preserve any skipped platform-specific coverage in the verification report.
 
 `upstream/pstack` is the unchanged upstream snapshot pinned in `upstream.lock.json`; `plugins/pstack-codex` is the maintained port. [Adaptation rules](adapter/rules.md) and [per-skill status](adapter/skills.json) track the differences. See [maintainer automation](docs/automation-options.md) for the separately configured update workflow and [guarded releases](docs/releases.md) for publication gates.
 

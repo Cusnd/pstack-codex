@@ -1,8 +1,8 @@
 {
   "repository": "https://github.com/cursor/plugins",
   "path": "pstack",
-  "commit": "6b78e9f4e46c75d1697d837e51f07c2692e60b24",
-  "tree": "4de050d88d7dacc7f65c180895b4413667786d63",
-  "version": "0.15.27",
+  "commit": "99b609a72323b70204eab407c622f436e858e112",
+  "tree": "880564357e051d7c7802da1cb5d8df1d0b008299",
+  "version": "0.15.32",
   "adaptation_status": "alpha"
 }

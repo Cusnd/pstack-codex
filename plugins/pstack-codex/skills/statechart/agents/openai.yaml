@@ -1,0 +1,6 @@
+interface:
+  display_name: "Statechart"
+  short_description: "Explain checked states and counterexample paths"
+  default_prompt: "Use $statechart to explain this model and its counterexamples."
+policy:
+  allow_implicit_invocation: false

@@ -6,7 +6,7 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 
 - `$poteto-mode read <thread>. restate the underlying issue in your own words, in plain english.`
 - `$in-your-own-words <long or messy ask>`
-- `$sharpen <your task>`
+- `$sharpen <the prompt you are about to send>`
 - `$poteto-mode investigate why <symptom>. give me what we know, what data you used, and your best hypotheses. don't change any code yet.`
 - `use $how to understand <subsystem>. then use $why to find out why it broke recently.`
 - `$recall my work on <topic> from last week, then read <issue>.`
@@ -34,6 +34,8 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 ## Review and ship
 
 - `$create-formal-verification-skill prove <property> holds in <module>, even when <steps> interleave or retry.`
+- `$maintain-formal-verification-skill check whether the model still describes <module> after the recent merges.`
+- `$statechart show the counterexample in <model> as a readable path and distinguish it from a real-code reproduction.`
 
 - `$interrogate the whole branch, but skeptically. don't change anything yet. no nitpicks unless it's a real bug or regression.` Read the dismissals too.
 - `$swarm check every package under <dir> against its check script. one worker per package. one report.`
@@ -44,6 +46,7 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 ## Away and back
 
 - `$ketchup` catches you up on this chat since your last message and lists every call that waits on you.
+- `$ketchup-video` presents the same evidence as silent slides when rendering and frame inspection are available.
 
 - `$poteto-mode im going to bed. <goal> in a fresh worktree off <base>. done means <checks>. keep a decision log. don't ask me before committing. continue until done using the supported scheduling mechanism when a future wakeup is needed. if you're truly stuck after a few hours, stop and write up why.`
 - `$show-me-your-work catch me up on what you did last night.` Read its Attention section first.

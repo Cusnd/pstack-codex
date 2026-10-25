@@ -25,11 +25,13 @@ Pick the tool that answers the question at the lowest cost: a model checker, a p
 - **Honest about scope.** Say what is verified, under which bounds and assumptions, and what is left out. A pass covers the model or the bound, not the whole system.
 - **Readable without the tool.** State the property and the harm in one plain sentence each. Tell a counterexample as a short sequence of steps in the code's words.
 - **Cheap to rerun.** One command, a reproducible tool version, and a run short enough that the next agent will use it on every relevant change.
-- **Kept in step with the code.** When verified code changes, something tells the next agent that the verification needs another look.
+- **Kept in step with the code.** Record which files and functions each check covers and the commit at which you last confirmed the verification describes them. Changes after that sync commit tell the next agent to recheck the model.
 
 ## Generate the verify skill
 
 Write `.agents/skills/verify-<area>/SKILL.md` with frontmatter that names the area and says when to use it. Match an existing project skill location when the host uses a different supported convention. Use the actual host's command and file tools; if the verifier cannot run, identify the missing capability and label the skill as a draft. Generated-input tests are a testing fallback, not a formal proof. Without frontmatter, the skill never registers. From the skill alone, the next agent must be able to tell whether a change touches the verified code, run the check, tell a real bug from a modeling error, and update the verification when a change is intended. Use this repo's real commands, paths, and nouns, and leave no placeholders.
+
+Record coverage and the sync commit in the generated skill. Move that commit forward only after confirming the verification describes the code at the new commit. For a TLA+ check, refer to the sibling [$statechart](../statechart/SKILL.md) skill by name to read each result as a chart or a shortest counterexample path; do not copy its release-specific commands, flags, or machine paths into the generated skill.
 
 ## Prove it before you hand off
 
@@ -37,4 +39,4 @@ Follow the generated skill once, as the next agent would, on a scratch change th
 
 ## Hand off
 
-Tell the user what you verified, which tool you used and why, the bounds, what the check found in plain words, how to run it, and what it does not cover. Suggest a second target only if you found a close one.
+Tell the user what you verified, which tool you used and why, the bounds, what the check found in plain words, how to run it, and what it does not cover. Suggest a second target only if you found a close one. Point to [$maintain-formal-verification-skill](../maintain-formal-verification-skill/SKILL.md) for changes that skipped rechecking the verification.
