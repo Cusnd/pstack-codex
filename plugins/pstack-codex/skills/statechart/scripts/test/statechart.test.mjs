@@ -5901,7 +5901,11 @@ const startRun = (dir, { wrap = [], env = {}, args = ["from-spec", "Pay.tla"] } 
   };
 };
 const until = async (ready) => {
-  while (!ready()) await sleep(20);
+  const deadline = Date.now() + 120_000;
+  while (!ready()) {
+    if (Date.now() >= deadline) throw new Error("Timed out waiting for the child test condition");
+    await sleep(20);
+  }
 };
 const ownTmp = (dir, name) => {
   const tmp = join(dir, name);
@@ -5912,7 +5916,7 @@ const tlcStarted = (tmp) => readdirSync(tmp).some((f) => f.startsWith("tlc-"));
 const tlcChecking = (tmp) => {
   try {
     return readdirSync(tmp, { recursive: true }).some((f) =>
-      /^tlc-[^/]+\/[^/]+\/[^/]+\.fp$/.test(f),
+      /^tlc-[^/]+\/[^/]+\/[^/]+\.fp$/.test(f.replaceAll("\\", "/")),
     );
   } catch {
     return false;

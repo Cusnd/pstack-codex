@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import {
   ChecksUnavailable,
   WatcherQueryError,
@@ -472,18 +472,21 @@ describe("context and stack discovery", () => {
   it("requests and parses fork identity from gh before stack discovery", () => {
     const directory = mkdtempSync(join(tmpdir(), "watch-pr-fork-"));
     try {
-      writeFileSync(join(directory, "gh"), `#!/bin/sh
-case "$*" in
-  *number,headRefName,baseRefName,isCrossRepository*) ;;
-  *) exit 2 ;;
-esac
-printf '%s\\n' '[{"number":42,"headRefName":"feature","baseRefName":"main","isCrossRepository":true}]'
-`, { mode: 0o755 });
+      const fixture = join(directory, "gh.mjs");
+      const source = `if (!process.argv.slice(2).includes("number,headRefName,baseRefName,isCrossRepository")) process.exit(2);
+console.log(JSON.stringify([{number:42,headRefName:"feature",baseRefName:"main",isCrossRepository:true}]));\n`;
+      writeFileSync(fixture, source);
+      if (process.platform === "win32") {
+        const built = spawnSync(process.execPath, ["build", "--compile", fixture, "--outfile", join(directory, "gh.exe")], { encoding: "utf8" });
+        expect(built.status).toBe(0);
+      } else {
+        writeFileSync(join(directory, "gh"), `#!/usr/bin/env bun\n${source}`, { mode: 0o755 });
+      }
       const program = `import { GhGitHubReader } from ${JSON.stringify(import.meta.dir + "/github.ts")};
         console.log(JSON.stringify(await new GhGitHubReader().openPullRequests({ owner: "owner", repo: "repo" })));`;
       const child = spawnSync(process.execPath, ["-e", program], {
         encoding: "utf8", timeout: 2000,
-        env: { ...process.env, PATH: directory + ":" + process.env.PATH },
+        env: { ...process.env, PATH: directory + delimiter + process.env.PATH },
       });
       expect(child.error).toBeUndefined();
       expect(child.status).toBe(0);
