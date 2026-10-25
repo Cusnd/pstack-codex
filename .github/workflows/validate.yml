@@ -32,3 +32,35 @@ jobs:
       - run: bun run typecheck
         working-directory: plugins/pstack-codex/skills/poteto-mode/scripts
       - run: python scripts/package.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.os }}
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 7
+  release:
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'Cusnd/pstack-codex'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: pstack-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: work/verified-packages
+      - run: python scripts/release.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
