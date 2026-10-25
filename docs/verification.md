@@ -31,6 +31,6 @@ These observations do not prove exact timer accuracy or long-term reliability. I
 - UI verification, independent agents, model overrides, connectors, and schedules depend on the host. Missing tools are an unverified boundary, not a passing check.
 - `make-bot-ui` is a planning-only entry until its external integration has an implemented and tested replacement.
 - Each maintenance host must pass a live changed-source-to-draft-PR rehearsal and duplicate-run handling before its recurring task is enabled. Record that evidence in the maintenance PR; unit coverage alone is insufficient.
-- The development candidate has not been installed from a published release tag. The existing isolated release installation evidence applies to `0.1.0-alpha.1`.
+- The development candidate has not been installed from a published release tag. The existing isolated installation evidence applies to `0.1.0-alpha.1`; `0.1.0-alpha.2` is published and package-verified but has not been installed into a personal environment by this maintenance task.
 
 See [usage](usage.md) for practical scope and [maintenance](automation-options.md) for the separate update process.

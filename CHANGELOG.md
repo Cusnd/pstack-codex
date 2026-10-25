@@ -12,6 +12,15 @@
 
 Known limits: `make-bot-ui` remains deferred; live media, macOS, desktop behavior, and personal installation require host-specific verification. A version in this changelog is not evidence of a published release.
 
+## 0.1.0-alpha.2 — 2026-10-25
+
+- Adapt upstream pstack 0.15.27, including `create-formal-verification-skill`; preserve all 55 skill entries.
+- Carry through ketchup completeness, setup/help/recipe refinements, sharpen guidance, and TypeScript type guards.
+- Verify and reuse immutable update candidates, rejecting damaged or incomplete candidates without advancing the accepted lock.
+- Gate automated releases on Linux and Windows validation and identical source-only ZIPs. Preserve existing tags and assets.
+
+Known limits: `make-bot-ui` remains deferred. Live macOS/desktop execution and personal installation are not established; an alpha release is not a claim of stable support.
+
 ## 0.1.0-alpha.1 — 2026-10-16
 
 First public alpha of pstack for Codex, based on upstream pstack 0.15.25.

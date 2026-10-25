@@ -108,6 +108,8 @@ const node = (script, args, cwd, env = {}, at = scripts) => {
     env: childEnv(env),
     timeout: 120_000,
   });
+  r.stdout = r.stdout?.replace(/\r\n/g, "\n");
+  r.stderr = r.stderr?.replace(/\r\n/g, "\n");
   r.stdout = r.stdout?.replace(/^( {2}TLC ran \d+ times? in )\d+\.\d s\.$/gm, "$1N s.");
   return r;
 };
@@ -5992,7 +5994,8 @@ const startRun = (dir, { wrap = [], env = {}, args = ["from-spec", "Pay.tla"] } 
   });
   return {
     child,
-    done: new Promise((done) => child.on("close", (status) => done({ status, stderr }))),
+    done: new Promise((done) => child.on("close", (status) =>
+      done({ status, stderr: stderr.replace(/\r\n/g, "\n") }))),
   };
 };
 const until = async (ready) => {
@@ -6024,7 +6027,7 @@ const dumpChecking = (tmp) =>
 const staged = (dir) => readdirSync(dir).filter((f) => f.startsWith("."));
 
 test(
-  "a run whose Node is killed mid-TLC leaves the output folder as it was, and a rerun charts its own spec",
+  "a run whose Node is killed mid-TLC publishes nothing, reclaims or exposes TLC, and a rerun charts its own spec",
   needsTlc,
   async () => {
     const dir = mkdtempSync(join(tmpdir(), "statechart-"));
@@ -6046,15 +6049,21 @@ test(
     }
     first.child.kill("SIGTERM");
     await first.done;
-    if (process.platform === "win32")
-      for (const pid of javaPids) assert.doesNotThrow(() => process.kill(pid, 0), "TLC outlives its Node");
-    else assert.doesNotThrow(() => process.kill(-first.child.pid, 0), "TLC outlives its Node");
+    const survivingJava = [];
+    if (process.platform === "win32") {
+      // Windows runners may assign the process tree to a job object and reclaim Java with Node.
+      // Record any survivor so this test proves it can be explicitly cleaned up before the rerun.
+      for (const pid of javaPids) {
+        try { process.kill(pid, 0); survivingJava.push(pid); }
+        catch (error) { if (error.code !== "ESRCH") throw error; }
+      }
+    } else assert.doesNotThrow(() => process.kill(-first.child.pid, 0), "TLC outlives its Node");
     assert.equal(existsSync(out), false);
 
     writeSlowPay(dir, 200, "Receipt");
     const second = node("statechart.mjs", ["from-spec", "Pay.tla"], dir);
     try {
-      if (process.platform === "win32") for (const pid of javaPids) process.kill(pid, "SIGKILL");
+      if (process.platform === "win32") for (const pid of survivingJava) process.kill(pid, "SIGKILL");
       else process.kill(-first.child.pid, "SIGKILL");
     } catch (error) {
       if (error.code !== "ESRCH") throw error;
