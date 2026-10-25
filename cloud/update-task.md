@@ -2,7 +2,18 @@
 
 Activation is managed by the host's schedule registry, separately from installation. Use the user's authorized cadence and time zone after the changed-candidate-to-draft-PR rehearsal passes. Run a native scheduled continuation in the verified coding conversation. A Codex Cloud conversation requires its published environment; a ChatGPT Work conversation must independently prove command and GitHub access. Name the actual host in verification evidence. Confirm its supported network mode reaches github.com and api.github.com before scheduling. Do not substitute a local desktop heartbeat.
 
-## Prompt to schedule
+## Authorized completion policy
+
+Default scope ends at a draft PR. The owner of Cusnd/pstack-codex has explicitly authorized automatic repairs, merges, and releases for this repository. Within that scope, apply the completion policy below instead of the draft-only limits in the reusable baseline prompt. Other repositories require their own explicit authorization.
+
+- Process an existing candidate PR before starting a competing candidate. Recheck all-state PRs by full source tree SHA; do not recreate rejected candidates.
+- Run the complete local suite and inspect current-head Linux/Windows CI, review threads, and repository protections. Mark a draft ready when locally verified, wait for triggered review, resolve real findings, and allow at most three repair iterations per candidate. Never weaken adapter rules, tests, required checks, or reviews to pass.
+- Merge only the verified head using an expected-SHA guard. Fetch main again; the merged main lock becomes the accepted baseline. No force pushes or administrator bypasses.
+- Publication is delegated to the [guarded release workflow](../docs/releases.md). Verify the main run, tag target, version, source key, prerelease flag, asset size/digest, and release URL. A successful merge is not proof of a release. Never move an existing tag or overwrite an asset.
+- Record merged/published evidence in the ignored maintenance receipt (including an explicit stage alongside the existing outcome vocabulary). Report real failures and exact remaining work, preserving the previous successful check time on failure. A candidate version remains pending until the release exists.
+- Do not change schedules, deploy, modify personal installations, send unrelated messages, or copy credentials. Permission denial stops the affected operation; report what the owner must authorize rather than bypassing it.
+
+## Reusable draft-only baseline prompt
 
 Maintain Cusnd/pstack-codex against the pstack subtree of cursor/plugins in this verified coding conversation. Complete one bounded pass without creating or changing schedules. Read AGENTS.md, adapter/rules.md, and cloud/networking.md. Inspect the current exec schema and use its supported network-enabled mode for Git, API, dependencies, probes, and preparation. Some hosts expose sandbox_permissions="with_additional_permissions" with additional_permissions.network.enabled=true; use those fields only when present in the actual schema. Preserve the inherited managed proxy and TLS settings. Distinguish a command sandbox denial from a proxy destination-policy denial. Use only supported tools. Keep personal environment, chat, and schedule identifiers in ignored work files. Never use Firecrawl, copy authentication files, edit installed caches, merge, release, deploy, or install this plugin into a personal account.
 

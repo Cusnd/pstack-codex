@@ -2,9 +2,9 @@
 
 A Codex adaptation of [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack): skills for understanding code, planning changes, implementing them, and checking the result against the user's goal.
 
-**Development candidate: `0.1.0-alpha.2` (not yet released).** This checkout tracks upstream 0.15.27 and includes all 55 skills. 54 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
+**This checkout: `0.1.0-alpha.2`.** This checkout tracks upstream 0.15.27 and includes all 55 skills. 54 have adapted instructions; `make-bot-ui` remains a planning-only entry because its original service integration is unavailable. Script checks are automated, but every agent workflow has not been exercised in every host. See [verification and limitations](docs/verification.md).
 
-The latest published release is still `0.1.0-alpha.1`, which includes 54 skills and tracks upstream 0.15.25. The installation commands below intentionally select that published tag. A maintenance PR does not upgrade installed copies.
+Check [GitHub Releases](https://github.com/Cusnd/pstack-codex/releases) for publication status; a version in main is not proof that publication succeeded. The installation commands below intentionally remain pinned to the original `0.1.0-alpha.1` release (54 skills, upstream 0.15.25). A maintenance PR or new release does not upgrade installed copies.
 
 ## Install
 
@@ -76,7 +76,7 @@ python scripts/package.py
 
 The ZIP filename follows the plugin manifest version. Dependencies and runtime caches are excluded. CI runs validation on Windows and Linux. Optional helper tools cache dependencies outside the installed plugin; see the [installation guide](docs/installation.md#optional-helper-tools).
 
-`upstream/pstack` is the unchanged upstream snapshot pinned in `upstream.lock.json`; `plugins/pstack-codex` is the maintained port. [Adaptation rules](adapter/rules.md) and [per-skill status](adapter/skills.json) track the differences. See [maintainer automation](docs/automation-options.md) for the separately configured update workflow.
+`upstream/pstack` is the unchanged upstream snapshot pinned in `upstream.lock.json`; `plugins/pstack-codex` is the maintained port. [Adaptation rules](adapter/rules.md) and [per-skill status](adapter/skills.json) track the differences. See [maintainer automation](docs/automation-options.md) for the separately configured update workflow and [guarded releases](docs/releases.md) for publication gates.
 
 ## License
 
