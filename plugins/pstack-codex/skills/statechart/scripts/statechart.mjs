@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { constants } from "node:buffer";
 import { spawn, spawnSync } from "node:child_process";
+import { renameCollision } from "./directory-rename.mjs";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -628,7 +629,7 @@ const moved = (from, to, ...missed) => {
     fs.renameSync(from, to);
     return true;
   } catch (e) {
-    if (missed.includes(e.code)) return false;
+    if (missed.includes(renameCollision(e, from, to))) return false;
     if (!["ENOSYS", "EXDEV", "EISDIR"].includes(e.code)) throw e;
   }
   // Some filesystems, such as FUSE mounts, cannot rename a folder that has files. They fail with
@@ -661,9 +662,10 @@ function claimedFolder(to, missed) {
     fs.renameSync(mine, to);
     return claimed;
   } catch (e) {
+    const code = renameCollision(e, mine, to);
     fs.closeSync(claimed);
     fs.rmdirSync(mine);
-    if (missed.includes(e.code)) return null;
+    if (missed.includes(code)) return null;
     throw e;
   }
 }

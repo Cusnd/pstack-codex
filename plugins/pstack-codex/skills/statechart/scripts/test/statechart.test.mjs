@@ -8,6 +8,7 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   renameSync,
   rmSync,
   statSync,
@@ -16,7 +17,7 @@ import {
   writeFileSync as writeRaw,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, delimiter, dirname, join, posix, win32 } from "node:path";
+import { basename, delimiter, dirname, isAbsolute, join, posix, win32 } from "node:path";
 import { test } from "node:test";
 import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -46,13 +47,14 @@ import {
 import { ruleBook } from "../rule-book.mjs";
 import { copyPath } from "../snapshot.mjs";
 import { findTlc, JAVA_TOOL, TLC_TOOL } from "../tlc-tools.mjs";
+import { renameCollision } from "../directory-rename.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const scripts = dirname(here);
 function executable(file, source) {
   if (process.platform !== "win32") {
     writeRaw(file, `#!${process.execPath}\n${source}`, { mode: 0o755 });
-    return;
+    return file;
   }
   const input = `${file}.mjs`;
   writeRaw(input, source);
@@ -60,6 +62,7 @@ function executable(file, source) {
     encoding: "utf8", timeout: 60_000,
   });
   assert.equal(built.status, 0, built.stderr || built.error?.message);
+  return `${file}.exe`;
 }
 
 // Keep the POSIX fault programs, but launch them through a native Windows stub.
@@ -82,6 +85,21 @@ const childEnv = (env) => ({ ...process.env, ...env,
   ...(process.platform === "win32" && env.TMPDIR ? { TMP: env.TMPDIR, TEMP: env.TMPDIR } : {}),
 });
 const fixture = (name) => readFileSync(join(here, name), "utf8");
+
+test("Windows directory rename collisions do not mask other permission errors", () => {
+  const dir = mkdtempSync(join(tmpdir(), "statechart-rename-"));
+  const from = join(dir, "from"), to = join(dir, "to"), file = join(dir, "file");
+  mkdirSync(from); mkdirSync(to); writeFileSync(file, "keep me");
+  const denied = { code: "EPERM" };
+  assert.equal(renameCollision(denied, from, to, "win32"), "EEXIST");
+  assert.equal(renameCollision(denied, from, to, "linux"), "EPERM");
+  assert.equal(renameCollision({code:"EACCES"}, from, to, "win32"), "EACCES");
+  assert.equal(renameCollision(denied, from, file, "win32"), "EPERM");
+  assert.equal(renameCollision(denied, from, join(dir, "missing"), "win32"), "EPERM");
+  assert.equal(renameCollision(denied, file, to, "win32"), "EPERM");
+  assert.deepEqual(readdirSync(dir).sort(), ["file", "from", "to"]);
+  assert.equal(readFileSync(file, "utf8"), "keep me");
+});
 const edges = (r) => r.transitions.map((t) => `${t.from} -> ${t.to} : ${t.label}`).sort();
 const node = (script, args, cwd, env = {}, at = scripts) => {
   const r = spawnSync(process.execPath, [join(at, script), ...args], {
@@ -2716,7 +2734,7 @@ test(
       const r = node("statechart.mjs", ["render", ...args], dir);
       assert.equal(r.status, 0, r.stderr);
       assert.equal(r.stderr, "");
-      assert.equal(r.stdout, `Wrote ${file}.\n`);
+      assert.equal(r.stdout, `Wrote ${file.replaceAll("\\", "/")}.\n`);
       const chart = renderChart(lib, SOURCE, { theme: THEMES[theme] });
       const png = decodePng(readFileSync(join(dir, file)));
       assert.deepEqual([png.width, png.height], [2 * chart.width, 2 * chart.height], file);
@@ -3087,7 +3105,7 @@ test(
       `TLC on Pay.tla with Pay.cfg:
   NoDoubleCharge holds.
   ChargedAtMostOnce holds.
-  EventuallyPaying is broken. The chart draws only INVARIANT rules, so read TLC's counterexample in ${join("Pay-statechart", "tlc", "Pay-EventuallyPaying.out")}.
+  EventuallyPaying is broken. The chart draws only INVARIANT rules, so read TLC's counterexample in ${posix.join("Pay-statechart", "tlc", "Pay-EventuallyPaying.out")}.
   TLC ran 4 times in N s.`,
     );
     const stories = `## Broken rules that the chart does not draw
@@ -3227,7 +3245,7 @@ test("from-spec reports a broken PROPERTY in each form that TLC reports it in", 
   const r = node("statechart.mjs", ["from-spec", "Pay.tla"], dir);
   assert.equal(r.status, 1, r.stderr);
   const broken = (p) =>
-    `  ${p} is broken. The chart draws only INVARIANT rules, so read TLC's counterexample in ${join("Pay-statechart", "tlc", `Pay-${p}.out`)}.`;
+    `  ${p} is broken. The chart draws only INVARIANT rules, so read TLC's counterexample in ${posix.join("Pay-statechart", "tlc", `Pay-${p}.out`)}.`;
   const initialOnly = (p) =>
     ` TLC checked ${p} only in the initial states, because it has no [], <>, or ~>. List it as an INVARIANT to check every state.`;
   assert.equal(
@@ -3308,7 +3326,7 @@ export const step = (action) => ({ Assign: "an agent takes it", Finish: "the age
       r.stdout.split("\n\n")[0],
       `TLC on Desk.tla with Desk.cfg:
   Known holds.
-  ApiRefines is broken (expected). The chart draws only INVARIANT rules, so read TLC's counterexample in ${join("Desk-statechart", "tlc", "Desk-ApiRefines.out")}.
+  ApiRefines is broken (expected). The chart draws only INVARIANT rules, so read TLC's counterexample in ${posix.join("Desk-statechart", "tlc", "Desk-ApiRefines.out")}.
   StartsOpen holds. TLC checked StartsOpen only in the initial states, because it has no [], <>, or ~>. List it as an INVARIANT to check every state.
   TLC ran 4 times in N s.`,
     );
@@ -6010,7 +6028,8 @@ test(
   needsTlc,
   async () => {
     const dir = mkdtempSync(join(tmpdir(), "statechart-"));
-    const out = writeSlowPay(dir, 60000);
+    // Leave time for Windows' process inventory before killing Node mid-run.
+    const out = writeSlowPay(dir, process.platform === "win32" ? 600000 : 60000);
     const tmp = ownTmp(dir, "tmp");
     const first = startRun(dir, { env: { TMPDIR: tmp } });
     await until(() => tlcStarted(tmp));
@@ -6023,6 +6042,7 @@ test(
       const found = JSON.parse(queried.stdout);
       javaPids = Array.isArray(found) ? found : [found];
       assert.ok(javaPids.length > 0 && javaPids.every((pid) => Number.isInteger(pid) && pid > 0));
+      for (const pid of javaPids) assert.doesNotThrow(() => process.kill(pid, 0), "TLC is still running before Node is killed");
     }
     first.child.kill("SIGTERM");
     await first.done;
@@ -6606,7 +6626,19 @@ exit $s
     for (const line of runs) {
       const [folder, parsed] = line.split(": ");
       assert.ok(folder.startsWith(join(tmp, "tlc-")), line);
-      assert.ok(parsed.startsWith(`Parsing file ${folder}/`), line);
+      assert.ok(parsed.startsWith("Parsing file "), line);
+      const canonical = (file) => {
+        const tail = [];
+        while (!existsSync(file)) {
+          const parent = dirname(file);
+          assert.notEqual(parent, file, "the logged path must have an existing ancestor");
+          tail.unshift(basename(file)); file = parent;
+        }
+        return join(realpathSync.native(file), ...tail);
+      };
+      const parsedFile = parsed.slice("Parsing file ".length).trim();
+      assert.equal(basename(parsedFile), "Naturals.tla", line);
+      assert.equal(canonical(dirname(parsedFile)), canonical(folder), line);
       folders.add(folder);
     }
     assert.equal(folders.size, runs.length);
@@ -6627,9 +6659,12 @@ test(
     const tmp = ownTmp(dir, "tmp");
     const r = node("statechart.mjs", ["from-spec", "Pay.tla"], dir, { TMPDIR: tmp });
     assert.equal(r.status, 2);
-    const [, file] = r.stderr.match(
-      /^(\S+\/tlc\/Pay\.out): TLC stopped on an error that is not a broken rule: Assumption .* is false\.\n$/,
+    const found = r.stderr.match(
+      /^(\S+[/\\]tlc[/\\]Pay\.out): TLC stopped on an error that is not a broken rule: Assumption .* is false\.\n$/,
     );
+    assert.ok(found, r.stderr);
+    const [, file] = found;
+    assert.ok(isAbsolute(file));
     assert.ok(file.startsWith(tmp), file);
     assert.match(readFileSync(file, "utf8"), /Assumption .* is false/);
     assert.equal(existsSync(join(dir, "Pay-statechart")), false);
@@ -6706,20 +6741,18 @@ test(
     writeFileSync(join(dir, "Pay.cfg"), "SPECIFICATION Spec\nINVARIANT NoDoubleCharge\n");
     writeFileSync(join(dir, "Pay.map.mjs"), payMap);
     const pid = join(dir, "dump.pid");
-    const java = join(dir, "java");
-    writeFileSync(
-      java,
-      `#!/bin/sh
-for a; do [ "$a" = -dump ] && dumping=1; done
-[ -z "$dumping" ] && exec "$REAL_JAVA" "$@"
-while [ "$1" != -dump ]; do shift; done
-printf 'TLC2 Version 2.19\\n'
-"$NODE" -e 'require("fs").writeFileSync(process.argv[1], ""); require("fs").truncateSync(process.argv[1], +process.argv[2])' "$3" "$SIZE"
-echo $$ > "$PID"
-exec sleep 20
-`,
-      { mode: 0o755 },
-    );
+    const java = executable(join(dir, "java"), `import fs from "node:fs"; import {spawnSync} from "node:child_process";
+const args = process.argv.slice(2), dump = args.indexOf("-dump");
+if (dump < 0) {
+  const result = spawnSync(process.env.REAL_JAVA, args, {stdio:"inherit"});
+  process.exit(result.status ?? 2);
+}
+console.log("TLC2 Version 2.19");
+fs.writeFileSync(args[dump + 2], "");
+fs.truncateSync(args[dump + 2], +process.env.SIZE);
+fs.writeFileSync(process.env.PID, String(process.pid));
+setTimeout(() => {}, 20000);
+`);
     const tmp = ownTmp(dir, "tmp");
     const r = node(
       "statechart.mjs",
@@ -6759,13 +6792,9 @@ test("TLC output that grows past one string stops TLC, and the command exits 2",
   writeFileSync(join(dir, "Pay.cfg"), "SPECIFICATION Spec\nINVARIANT NoDoubleCharge\n");
   writeFileSync(join(dir, "Pay.map.mjs"), payMap);
   const pid = join(dir, "tlc.pid");
-  const java = join(dir, "java");
-  writeFileSync(
-    java,
-    `#!/bin/sh
-echo $$ > "$PID"
-exec "$NODE" -e '
-const size = +process.argv[1];
+  const java = executable(join(dir, "java"), `import fs from "node:fs";
+fs.writeFileSync(process.env.PID, String(process.pid));
+const size = +process.env.SIZE;
 const chunk = "x".repeat(1 << 16);
 let sent = 0;
 process.stdout.write("TLC2 Version 2.19\\n");
@@ -6776,10 +6805,7 @@ process.stdout.write("TLC2 Version 2.19\\n");
   }
   setTimeout(() => {}, 20000);
 })();
-' "$SIZE"
-`,
-    { mode: 0o755 },
-  );
+`);
   const tmp = ownTmp(dir, "tmp");
   const r = node("statechart.mjs", ["from-spec", "Pay.tla"], dir, {
     JAVA: java,
@@ -6790,9 +6816,12 @@ process.stdout.write("TLC2 Version 2.19\\n");
     TMPDIR: tmp,
   });
   assert.equal(r.status, 2, r.stderr);
-  const [, out] = r.stderr.match(
-    /^(\/\S+\/tlc\/Pay-NoDoubleCharge\.out): TLC printed more than [\d,]+ characters, the most that the command can read, so the command stopped TLC\. Smaller constants make TLC print less\.\n$/,
+  const found = r.stderr.match(
+    /^(\S+[/\\]tlc[/\\]Pay-NoDoubleCharge\.out): TLC printed more than [\d,]+ characters, the most that the command can read, so the command stopped TLC\. Smaller constants make TLC print less\.\n$/,
   );
+  assert.ok(found, r.stderr);
+  const [, out] = found;
+  assert.ok(isAbsolute(out));
   assert.throws(() => process.kill(Number(readFileSync(pid, "utf8")), 0), { code: "ESRCH" });
   assert.equal(existsSync(out), true);
   assert.equal(existsSync(join(dir, "Pay-statechart")), false);
@@ -6836,9 +6865,12 @@ exec "$REAL_JAVA" "$@"
     );
     assert.equal(r.status, 2, r.stderr);
     assert.match(r.stdout, /^ {2}NoDoubleCharge is broken \(expected\)\.$/m);
-    const [, kept] = r.stderr.match(
-      /^(\/\S+)\/tlc\/Pay\.out: TLC stopped on an error that is not a broken rule: TLC threw an unexpected exception\.$/m,
+    const found = r.stderr.match(
+      /^(\S+)[/\\]tlc[/\\]Pay\.out: TLC stopped on an error that is not a broken rule: TLC threw an unexpected exception\.$/m,
     );
+    assert.ok(found, r.stderr);
+    const [, kept] = found;
+    assert.ok(isAbsolute(kept));
     assert.match(
       readFileSync(join(kept, "tlc", "Pay-NoDoubleCharge.out"), "utf8"),
       /^Error: Invariant NoDoubleCharge is violated/m,
