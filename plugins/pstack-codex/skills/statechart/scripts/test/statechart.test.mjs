@@ -13,7 +13,7 @@ import {
   statSync,
   symlinkSync,
   utimesSync,
-  writeFileSync,
+  writeFileSync as writeRaw,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, delimiter, dirname, join, posix, win32 } from "node:path";
@@ -49,14 +49,45 @@ import { findTlc, JAVA_TOOL, TLC_TOOL } from "../tlc-tools.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const scripts = dirname(here);
+function executable(file, source) {
+  if (process.platform !== "win32") {
+    writeRaw(file, `#!${process.execPath}\n${source}`, { mode: 0o755 });
+    return;
+  }
+  const input = `${file}.mjs`;
+  writeRaw(input, source);
+  const built = spawnSync("bun", ["build", "--compile", input, "--outfile", `${file}.exe`], {
+    encoding: "utf8", timeout: 60_000,
+  });
+  assert.equal(built.status, 0, built.stderr || built.error?.message);
+}
+
+// Keep the POSIX fault programs, but launch them through a native Windows stub.
+// Git Bash is a test dependency only, not a requirement of statechart's Java path.
+function writeFileSync(file, data, options) {
+  writeRaw(file, data, options);
+  if (process.platform !== "win32" || typeof data !== "string" || !data.startsWith("#!/bin/sh")) return;
+  const bash = process.env.PSTACK_TEST_BASH || join(process.env.ProgramFiles || "C:\\Program Files", "Git", "bin", "bash.exe");
+  assert.ok(existsSync(bash), "Windows shell fault fixtures require Git Bash");
+  const script = `${file}.sh`;
+  writeRaw(script, data);
+  executable(file, `import { spawnSync } from "node:child_process";
+const r = spawnSync(${JSON.stringify(bash)}, [${JSON.stringify(script)}, ...process.argv.slice(2)], {stdio:"inherit"});
+if (r.error) { console.error(r.error.message); process.exit(2); }
+process.exit(r.status ?? 2);\n`);
+}
+
+const childEnv = (env) => ({ ...process.env, ...env,
+  ...(env.XDG_CACHE_HOME ? { PSTACK_CACHE_DIR: env.XDG_CACHE_HOME } : {}),
+  ...(process.platform === "win32" && env.TMPDIR ? { TMP: env.TMPDIR, TEMP: env.TMPDIR } : {}),
+});
 const fixture = (name) => readFileSync(join(here, name), "utf8");
 const edges = (r) => r.transitions.map((t) => `${t.from} -> ${t.to} : ${t.label}`).sort();
 const node = (script, args, cwd, env = {}, at = scripts) => {
   const r = spawnSync(process.execPath, [join(at, script), ...args], {
     cwd,
     encoding: "utf8",
-    env: { ...process.env, ...env,
-      ...(env.XDG_CACHE_HOME ? { PSTACK_CACHE_DIR: env.XDG_CACHE_HOME } : {}) },
+    env: childEnv(env),
     timeout: 120_000,
   });
   r.stdout = r.stdout?.replace(/^( {2}TLC ran \d+ times? in )\d+\.\d s\.$/gm, "$1N s.");
@@ -596,6 +627,20 @@ test("the parser reads class shorthand, repeated descriptions, and states first 
     "Moving -> A.X : start",
     "Nothing chosen -> Done : you finish",
   ]);
+});
+
+test("TLA string escapes preserve values and distinct state identities", () => {
+  for (const [source, expected] of [
+    ['"line\\nbreak"', "line\nbreak"], ['"tab\\tstop"', "tab\tstop"],
+    ['"form\\ffeed"', "form\ffeed"], ['"carriage\\rreturn"', "carriage\rreturn"],
+    ['"quote\\\"here"', 'quote"here'], ['"back\\\\slash"', "back\\slash"],
+  ]) assert.equal(parseValue(source), expected);
+  assert.notEqual(stateKey({ text: parseValue('"line\\nbreak"') }),
+                  stateKey({ text: parseValue('"linenbreak"') }));
+  assert.notEqual(stateKey({ text: parseValue('"tab\\tstop"') }),
+                  stateKey({ text: parseValue('"tabtstop"') }));
+  for (const malformed of ['"unterminated', '"bad\\q"', '"tail\\'])
+    assert.equal(parseValue(malformed), malformed);
 });
 
 test("TLC values, states, graphs, and traces parse", () => {
@@ -1460,9 +1505,7 @@ test("statechart.mjs shows mise's own error when mise fails before it can look f
   const bin = mkdtempSync(join(tmpdir(), "fake-mise-"));
   const said =
     "mise ERROR failed to read the global config\nmise ERROR Run with --verbose for more";
-  writeFileSync(join(bin, "mise"), `#!/bin/sh\nprintf '%s\\n' "${said}" >&2\nexit 1\n`, {
-    mode: 0o755,
-  });
+  executable(join(bin, "mise"), `process.stderr.write(${JSON.stringify(said + "\n")}); process.exit(1);\n`);
   writeFileSync(join(dir, "Pay.tla"), "---- MODULE Pay ----\n====\n");
   writeFileSync(join(dir, "Pay.cfg"), "SPECIFICATION Spec\n");
   writeFileSync(join(dir, "Pay.map.mjs"), "export default {};\n");
@@ -1676,12 +1719,44 @@ test("statechart.mjs prints its help with -h or --help and points at it for an a
 
 const tools = (() => {
   try {
-    return findTlc();
+    const found = findTlc();
+    // JAVA is an explicit file path, whereas findTlc's unset-JAVA fallback is
+    // a PATH command. Fixtures that pass JAVA must preserve that distinction.
+    if (found.java === "java") {
+      const name = process.platform === "win32" ? "java.exe" : "java";
+      found.java = (process.env.PATH || "").split(delimiter)
+        .map((dir) => join(dir, name)).find((file) => existsSync(file)) || found.java;
+    }
+    return found;
   } catch {
     return null;
   }
 })();
 const needsTlc = { skip: tools ? false : "cannot find TLC" };
+
+test("real TLC keeps escaped newline and literal n as distinct states and bug paths", needsTlc, () => {
+  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  writeFileSync(join(dir, "Escapes.tla"), String.raw`---- MODULE Escapes ----
+VARIABLE text
+Init == text = "line\nbreak"
+Flatten == text = "line\nbreak" /\ text' = "linenbreak"
+Spec == Init /\ [][Flatten]_text
+\* The text keeps its line break.
+KeepBreak == text # "linenbreak"
+====
+`);
+  writeFileSync(join(dir, "Escapes.cfg"), "SPECIFICATION Spec\nINVARIANT KeepBreak\n");
+  writeFileSync(join(dir, "Escapes.map.mjs"), String.raw`export const state = (v) =>
+  v.text === "line\nbreak" ? "With a line break" : "With a letter n";
+export const step = () => "the line break becomes a letter";
+`);
+  const result = node("statechart.mjs", ["from-spec", "Escapes.tla", "--expect-broken", "KeepBreak"], dir);
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /Chart: 2 states and 1 transitions? from 2 model states/);
+  const story = readFileSync(join(dir, "Escapes-statechart", "stories.md"), "utf8");
+  assert.match(story, /Start: With a line break/);
+  assert.match(story, /Now: With a letter n/);
+});
 
 const realEntry = pathToFileURL(join(cacheDir(), "entry.mjs")).href;
 const lib = await loadRenderer().catch(() => null);
@@ -1825,27 +1900,30 @@ function tlc(dir, name) {
   return r;
 }
 
-const FAKE_MISE = `#!/bin/sh
-echo "$PWD $*" >> "$MISE_LOG"
-d=$PWD
-while :; do
-  grep -qs '^locked = true' "$d/mise.toml" && locked=1
-  case ":$MISE_CEILING_PATHS:" in *":$d:"*) break;; esac
-  [ "$d" = / ] && break
-  d=$(dirname "$d")
-done
-case $1 in
-install)
-  if [ -n "$FAIL" ]; then echo "mise ERROR cannot download tla2tools.jar" >&2; exit 1; fi
-  if [ -n "$locked" ]; then echo "mise ERROR No lockfile URL found for $3 (--locked mode)" >&2; exit 1; fi
-  touch "$MISE_STATE/installed"
-  if [ -n "$FAIL_AFTER_INSTALL" ]; then echo "mise ERROR failed to rebuild runtime symlinks: File exists (os error 17)" >&2; exit 1; fi
-  exit 0;;
-where) if [ -e "$MISE_STATE/installed" ]; then echo "$TLAPLUS_HOME"; exit 0; fi;;
-which) if [ -e "$MISE_STATE/installed" ]; then echo "$TLC_JAVA"; exit 0; fi;;
-esac
-echo "mise ERROR $2 is not installed" >&2
-exit 1
+const FAKE_MISE = `import fs from "node:fs"; import path from "node:path";
+const env = process.env, args = process.argv.slice(2);
+fs.appendFileSync(env.MISE_LOG, process.cwd() + " " + args.join(" ") + "\\n");
+let folder = process.cwd(), locked = false;
+const ceilings = (env.MISE_CEILING_PATHS || "").split(path.delimiter);
+for (;;) {
+  const config = path.join(folder, "mise.toml");
+  if (fs.existsSync(config) && /^locked = true/m.test(fs.readFileSync(config, "utf8"))) locked = true;
+  if (ceilings.includes(folder) || path.dirname(folder) === folder) break;
+  folder = path.dirname(folder);
+}
+const fail = (text) => { console.error(text); process.exit(1); };
+const installed = path.join(env.MISE_STATE, "installed");
+if (args[0] === "install") {
+  if (env.FAIL) fail("mise ERROR cannot download tla2tools.jar");
+  if (locked) fail("mise ERROR No lockfile URL found for " + args[2] + " (--locked mode)");
+  fs.writeFileSync(installed, "");
+  if (env.FAIL_AFTER_INSTALL) fail("mise ERROR failed to rebuild runtime symlinks: File exists (os error 17)");
+  process.exit(0);
+}
+if (fs.existsSync(installed) && ["where", "which"].includes(args[0])) {
+  console.log(args[0] === "where" ? env.TLAPLUS_HOME : env.TLC_JAVA); process.exit(0);
+}
+fail("mise ERROR " + args[1] + " is not installed");
 `;
 
 function outsideRepoWithoutTlc() {
@@ -1856,7 +1934,7 @@ function outsideRepoWithoutTlc() {
   const state = join(root, "state");
   const dir = join(root, "work");
   for (const d of [bin, state, dir]) mkdirSync(d);
-  writeFileSync(join(bin, "mise"), FAKE_MISE, { mode: 0o755 });
+  executable(join(bin, "mise"), FAKE_MISE);
   writeFileSync(join(dir, "mise.toml"), '[tools]\njava = "17"\n');
   const log = join(root, "mise.log");
   const env = {
@@ -5886,8 +5964,7 @@ const startRun = (dir, { wrap = [], env = {}, args = ["from-spec", "Pay.tla"] } 
   const [command, ...rest] = [...wrap, process.execPath, join(scripts, "statechart.mjs"), ...args];
   const child = spawn(command, rest, {
     cwd: dir,
-    env: { ...process.env, ...env,
-      ...(env.XDG_CACHE_HOME ? { PSTACK_CACHE_DIR: env.XDG_CACHE_HOME } : {}) },
+    env: childEnv(env),
     stdio: ["ignore", "ignore", "pipe"],
     detached: true,
   });
@@ -5938,15 +6015,27 @@ test(
     const first = startRun(dir, { env: { TMPDIR: tmp } });
     await until(() => tlcStarted(tmp));
     await sleep(300);
+    let javaPids = [];
+    if (process.platform === "win32") {
+      const queried = spawnSync("powershell.exe", ["-NoProfile", "-Command",
+        `@(Get-CimInstance Win32_Process -Filter "ParentProcessId = ${first.child.pid} AND Name = 'java.exe'" | Select-Object -ExpandProperty ProcessId) | ConvertTo-Json -Compress`], {encoding:"utf8"});
+      assert.equal(queried.status, 0, queried.stderr);
+      const found = JSON.parse(queried.stdout);
+      javaPids = Array.isArray(found) ? found : [found];
+      assert.ok(javaPids.length > 0 && javaPids.every((pid) => Number.isInteger(pid) && pid > 0));
+    }
     first.child.kill("SIGTERM");
     await first.done;
-    assert.doesNotThrow(() => process.kill(-first.child.pid, 0), "TLC outlives its Node");
+    if (process.platform === "win32")
+      for (const pid of javaPids) assert.doesNotThrow(() => process.kill(pid, 0), "TLC outlives its Node");
+    else assert.doesNotThrow(() => process.kill(-first.child.pid, 0), "TLC outlives its Node");
     assert.equal(existsSync(out), false);
 
     writeSlowPay(dir, 200, "Receipt");
     const second = node("statechart.mjs", ["from-spec", "Pay.tla"], dir);
     try {
-      process.kill(-first.child.pid, "SIGKILL");
+      if (process.platform === "win32") for (const pid of javaPids) process.kill(pid, "SIGKILL");
+      else process.kill(-first.child.pid, "SIGKILL");
     } catch (error) {
       if (error.code !== "ESRCH") throw error;
     }

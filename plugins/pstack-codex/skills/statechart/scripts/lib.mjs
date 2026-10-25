@@ -78,9 +78,15 @@ export function parseValue(text) {
       i++;
       let s = "";
       while (i < src.length && src[i] !== '"') {
-        if (src[i] === "\\") i++;
-        s += src[i++];
+        if (src[i] === "\\") {
+          const escapes = { t: "\t", n: "\n", f: "\f", r: "\r", '"': '"', "\\": "\\" };
+          const escaped = src[++i];
+          if (!Object.hasOwn(escapes, escaped)) throw new Error("unsupported TLA string escape");
+          s += escapes[escaped];
+          i++;
+        } else s += src[i++];
       }
+      if (src[i] !== '"') throw new Error("unterminated TLA string");
       i++;
       return s;
     }

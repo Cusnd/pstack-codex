@@ -7,6 +7,7 @@
 - Make sharpen return an improved prompt without executing it; track formal-check coverage and sync commits; keep reflect edits outside installed caches.
 - Preserve portable worktree auditing and apply upstream active-PR selection, fork-aware stack discovery, bounded polling sleeps, and multi-backtick plan parsing.
 - Retain upstream statechart regression tests and add their Node/Java/TLC setup to the validation matrix. Keep dependencies outside installed source.
+- Decode TLA string escapes without collapsing distinct states; add a real TLC counterexample regression and portable Windows test fixtures.
 
 Known limits: `make-bot-ui` remains deferred; live media, macOS, desktop behavior, and personal installation require host-specific verification. A version in this changelog is not evidence of a published release.
 

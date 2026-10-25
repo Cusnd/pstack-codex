@@ -98,7 +98,7 @@ async function rendererFor(command, flags) {
 
 const rel = (file) => {
   const r = path.relative(process.cwd(), file) || ".";
-  return r === ".." || r.startsWith(`..${path.sep}`) ? path.resolve(file) : r;
+  return (r === ".." || r.startsWith(`..${path.sep}`) ? path.resolve(file) : r).split(path.sep).join("/");
 };
 const cfgOf = (spec) => spec.replace(/\.tla$/, ".cfg");
 
